@@ -37,16 +37,16 @@ const projects: Project[] = [
 function EyeIcon({ active }: { active: boolean }) {
   return (
     <svg
-      width="22"
-      height="15"
+      width="20"
+      height="14"
       viewBox="0 0 22 15"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
       style={{
-        color: active ? "#f0c93a" : "rgba(255,255,255,0.18)",
-        transform: active ? "scale(1.2)" : "scale(1)",
+        color: active ? "#f0c93a" : "rgba(255,255,255,0.2)",
+        transform: active ? "scale(1.15)" : "scale(1)",
         transition: "all 0.3s ease",
         flexShrink: 0,
       }}
@@ -61,7 +61,6 @@ export default function WorkSection() {
   const [active, setActive] = useState(0);
   const [carouselIdx, setCarouselIdx] = useState(0);
 
-  // Auto-advance carousel only when the active project has multiple images
   useEffect(() => {
     const imgs = projects[active].images;
     if (imgs.length <= 1) return;
@@ -96,11 +95,11 @@ export default function WorkSection() {
         </a>
       </div>
 
-      {/* ── Body ── */}
+      {/* ── Body: list left + sticky image right ── */}
       <div className="flex flex-col lg:flex-row">
 
-        {/* Left — project list */}
-        <div className="flex-1 flex flex-col">
+        {/* Left: project list */}
+        <div className="lg:w-[48%] flex flex-col">
           {projects.map(({ num, client, location, services, images }, i) => (
             <div
               key={num}
@@ -113,66 +112,47 @@ export default function WorkSection() {
                 style={{ background: active === i ? "#f0c93a" : "transparent" }}
               />
 
-              <div className="px-6 md:px-12 py-9 flex items-center justify-between gap-8">
-                <div className="flex items-start gap-6 min-w-0">
-                  {/* Number */}
-                  <span
-                    className="syne flex-shrink-0 transition-all duration-300 leading-none"
+              <div className="px-6 md:px-12 py-8 flex items-center gap-6 md:gap-10">
+                {/* Number */}
+                <span
+                  className="syne flex-shrink-0 transition-all duration-300 leading-none"
+                  style={{
+                    fontSize: active === i ? "clamp(32px, 3vw, 48px)" : "clamp(13px, 1.2vw, 16px)",
+                    color: active === i ? "#f0c93a" : "rgba(255,255,255,0.25)",
+                    minWidth: "48px",
+                  }}
+                >
+                  {num}
+                </span>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div
+                    className="syne tracking-[-0.02em] leading-tight transition-colors duration-300"
                     style={{
-                      fontSize: active === i ? "clamp(36px, 3.5vw, 52px)" : "clamp(13px, 1.2vw, 16px)",
-                      color: active === i ? "#f0c93a" : "rgba(255,255,255,0.25)",
-                      marginTop: active === i ? "2px" : "6px",
+                      fontSize: "clamp(18px, 1.8vw, 26px)",
+                      color: active === i ? "#ffffff" : "rgba(255,255,255,0.55)",
                     }}
                   >
-                    {num}
-                  </span>
-
-                  {/* Info */}
-                  <div className="min-w-0">
-                    <div
-                      className="syne tracking-[-0.02em] leading-tight transition-colors duration-300 truncate"
-                      style={{
-                        fontSize: "clamp(20px, 2vw, 28px)",
-                        color: active === i ? "#ffffff" : "rgba(255,255,255,0.55)",
-                      }}
-                    >
-                      {client}
-                    </div>
-                    <div className="flex items-center gap-3 mt-2 flex-wrap">
-                      <span className="text-[11px] text-white/30 font-medium tracking-widest uppercase">
-                        {location}
+                    {client}
+                  </div>
+                  <div className="flex items-center gap-3 mt-2 flex-wrap">
+                    <span className="text-[11px] text-white/30 font-medium tracking-widest uppercase">
+                      {location}
+                    </span>
+                    <span className="text-white/15">·</span>
+                    {services.map((s) => (
+                      <span
+                        key={s}
+                        className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 transition-all duration-300"
+                        style={{
+                          background: active === i ? "rgba(240,201,58,0.15)" : "rgba(255,255,255,0.06)",
+                          color: active === i ? "#f0c93a" : "rgba(255,255,255,0.3)",
+                        }}
+                      >
+                        {s}
                       </span>
-                      <span className="text-white/15">·</span>
-                      {services.map((s) => (
-                        <span
-                          key={s}
-                          className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 transition-all duration-300"
-                          style={{
-                            background: active === i ? "rgba(240,201,58,0.15)" : "rgba(255,255,255,0.06)",
-                            color: active === i ? "#f0c93a" : "rgba(255,255,255,0.3)",
-                          }}
-                        >
-                          {s}
-                        </span>
-                      ))}
-                      {/* Carousel dot indicators — only for multi-image projects when active */}
-                      {images.length > 1 && active === i && (
-                        <span className="flex items-center gap-1 ml-1">
-                          {images.map((_, idx) => (
-                            <span
-                              key={idx}
-                              style={{
-                                display: "inline-block",
-                                width: idx === carouselIdx ? "14px" : "5px",
-                                height: "5px",
-                                background: idx === carouselIdx ? "#f0c93a" : "rgba(255,255,255,0.25)",
-                                transition: "all 0.3s ease",
-                              }}
-                            />
-                          ))}
-                        </span>
-                      )}
-                    </div>
+                    ))}
                   </div>
                 </div>
 
@@ -195,21 +175,37 @@ export default function WorkSection() {
                     <img src={src} alt={client} className="w-full h-full object-cover" />
                   </div>
                 ))}
+                {/* Mobile carousel indicators */}
+                {images.length > 1 && (
+                  <div className="absolute bottom-4 right-4 flex items-center gap-2 z-10">
+                    {images.map((_, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          width: idx === carouselIdx ? "32px" : "8px",
+                          height: "3px",
+                          background: idx === carouselIdx ? "#f0c93a" : "rgba(255,255,255,0.35)",
+                          border: idx === carouselIdx ? "none" : "1px solid rgba(255,255,255,0.25)",
+                          flexShrink: 0,
+                          transition: "width 0.35s ease, background 0.35s ease",
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           ))}
 
           {/* Your project here */}
-          <div className="border-b border-white/8 px-6 md:px-12 py-9 flex items-center justify-between gap-6">
-            <div className="flex items-start gap-6 min-w-0">
-              <span className="syne text-[13px] text-white/25 flex-shrink-0 mt-1">04</span>
-              <div>
-                <div className="syne text-[clamp(20px,2vw,28px)] tracking-[-0.02em] text-white/50">
-                  Your project here
-                </div>
-                <div className="text-[11px] text-white/35 mt-2 uppercase tracking-widest font-medium">
-                  We have space for one new client
-                </div>
+          <div className="border-b border-white/8 px-6 md:px-12 py-8 flex items-center gap-6 md:gap-10">
+            <span className="syne text-[13px] text-white/20 flex-shrink-0 min-w-[48px]">04</span>
+            <div className="flex-1">
+              <div className="syne text-[clamp(18px,1.8vw,26px)] tracking-[-0.02em] text-white/45">
+                Your project here
+              </div>
+              <div className="text-[11px] text-white/30 mt-2 uppercase tracking-widest font-medium">
+                We have space for one new client
               </div>
             </div>
             <a
@@ -221,48 +217,54 @@ export default function WorkSection() {
           </div>
         </div>
 
-        {/* Right — sticky image panel (desktop only) */}
-        <div className="hidden lg:block relative w-[52%] flex-shrink-0">
-          <div className="sticky top-[72px] h-[calc(100vh-72px)]">
-            {projects.map(({ images, client }, i) => (
-              <div
-                key={i}
-                className="absolute inset-0"
-                style={{
-                  opacity: active === i ? 1 : 0,
-                  transition: "opacity 0.5s ease",
-                }}
-              >
-                {/* Each image in this project's carousel */}
-                {images.map((src, idx) => (
-                  <div
-                    key={idx}
-                    className="absolute inset-0"
-                    style={{
-                      opacity: idx === carouselIdx ? 1 : 0,
-                      transition: "opacity 0.8s ease",
-                    }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt={client} className="w-full h-full object-cover" />
-                  </div>
-                ))}
-                {/* Left vignette */}
+        {/* Right: sticky full-height image panel */}
+        <div
+          className="hidden lg:block lg:w-[52%] sticky top-[72px]"
+          style={{ height: "calc(100vh - 72px)" }}
+        >
+          <div className="relative w-full h-full">
+            {/* All project images stacked — active one visible */}
+            {projects.map(({ client, images }, i) =>
+              images.map((src, idx) => (
                 <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{ background: "linear-gradient(to right, rgba(13,13,13,0.45) 0%, transparent 28%)" }}
-                />
-              </div>
-            ))}
+                  key={`${i}-${idx}`}
+                  className="absolute inset-0"
+                  style={{
+                    opacity: active === i && carouselIdx === idx ? 1 : 0,
+                    transition: "opacity 0.7s ease",
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src} alt={client} className="w-full h-full object-cover" />
+                </div>
+              ))
+            )}
 
-            {/* Counter */}
-            <div className="absolute bottom-8 right-8 z-10">
-              <div className="syne text-[11px] tracking-[0.15em] uppercase text-white/30">
-                {String(active + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+            {/* Carousel indicators — only when active project has multiple images */}
+            {projects[active].images.length > 1 && (
+              <div className="absolute bottom-7 right-7 flex items-center gap-2 z-10">
+                {projects[active].images.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCarouselIdx(idx)}
+                    aria-label={`Image ${idx + 1}`}
+                    style={{
+                      width: idx === carouselIdx ? "40px" : "10px",
+                      height: "3px",
+                      background: idx === carouselIdx ? "#f0c93a" : "rgba(255,255,255,0.35)",
+                      border: idx === carouselIdx ? "none" : "1px solid rgba(255,255,255,0.25)",
+                      cursor: "pointer",
+                      padding: 0,
+                      flexShrink: 0,
+                      transition: "width 0.35s ease, background 0.35s ease",
+                    }}
+                  />
+                ))}
               </div>
-            </div>
+            )}
           </div>
         </div>
+
       </div>
     </section>
   );

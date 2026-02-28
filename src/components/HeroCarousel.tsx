@@ -39,21 +39,22 @@ export default function HeroCarousel() {
         </div>
       ))}
 
-      {/* Dot indicators */}
-      <div className="absolute bottom-6 right-6 flex gap-2 z-10">
+      {/* Slide indicators */}
+      <div className="absolute bottom-7 right-7 flex items-center gap-2 z-10">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
             aria-label={`Slide ${i + 1}`}
             style={{
-              width: i === current ? "20px" : "6px",
-              height: "6px",
-              background: i === current ? "#f0c93a" : "rgba(255,255,255,0.5)",
-              border: "none",
+              width: i === current ? "40px" : "10px",
+              height: "3px",
+              background: i === current ? "#f0c93a" : "rgba(255,255,255,0.35)",
+              border: i === current ? "none" : "1px solid rgba(255,255,255,0.25)",
               cursor: "pointer",
               padding: 0,
-              transition: "all 0.3s ease",
+              flexShrink: 0,
+              transition: "width 0.35s ease, background 0.35s ease",
             }}
           />
         ))}

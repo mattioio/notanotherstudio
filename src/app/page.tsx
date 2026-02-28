@@ -4,6 +4,7 @@ import PackagesSection from "@/components/PackagesSection";
 import HomeContactSection from "@/components/HomeContactSection";
 import HeroCarousel from "@/components/HeroCarousel";
 import WorkSection from "@/components/WorkSection";
+import ScrollBadge from "@/components/ScrollBadge";
 
 export const metadata: Metadata = {
   title: "Not Another Studio | Web, Print & Brand for Commercial Letting Agencies",
@@ -89,8 +90,8 @@ export default function HomePage() {
         id="home"
         className="relative pt-[72px] min-h-screen flex flex-col lg:flex-row"
       >
-        {/* Left */}
-        <div className="relative z-10 flex-1 flex items-center px-6 md:px-12 py-20 lg:py-0">
+        {/* Left — text */}
+        <div className="relative z-10 flex items-center px-6 md:px-12 py-20 lg:py-0 lg:w-[38%] flex-shrink-0">
           <div className="max-w-[480px]">
             <div className="eyebrow fade-up visible mb-6">For Commercial Letting Agencies</div>
             <h1
@@ -119,8 +120,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Right — full-bleed carousel */}
-        <div className="relative h-[400px] lg:h-auto lg:flex-1 overflow-hidden">
+        {/* Right — full-bleed carousel, 62% of width */}
+        <div className="relative h-[50vh] lg:h-auto flex-1 overflow-hidden">
           <HeroCarousel />
         </div>
       </section>
@@ -235,13 +236,7 @@ export default function HomePage() {
             }}
           />
           {/* Badge */}
-          <div
-            className="relative z-10 w-[200px] h-[200px] bg-[#0d0d0d] flex flex-col items-center justify-center text-center text-white"
-            style={{ transform: "rotate(-6deg)" }}
-          >
-            <span className="syne text-[48px] leading-none text-[#f0c93a]">2–6</span>
-            <span className="text-[11px] font-bold tracking-[0.1em] uppercase mt-1">Weeks to launch</span>
-          </div>
+          <ScrollBadge />
         </div>
       </section>
 
