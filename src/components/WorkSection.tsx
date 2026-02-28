@@ -16,21 +16,21 @@ const projects: Project[] = [
     client: "Jenkins Law",
     location: "London",
     services: ["Web", "Print"],
-    images: ["/images/work3.jpeg"],
+    images: ["/images/work-jenkins1.jpeg", "/images/work-jenkins2.jpeg"],
   },
   {
     num: "02",
     client: "Neill Mylroie Real Estate",
     location: "Manchester",
     services: ["Web", "Brand"],
-    images: ["/images/work2.jpeg"],
+    images: ["/images/work-neill1.jpeg", "/images/work-neill2.jpeg"],
   },
   {
     num: "03",
     client: "Market Place Hounslow",
     location: "London",
     services: ["Brand", "Web", "Print"],
-    images: ["/images/work1.jpeg", "/images/work4.jpeg"],
+    images: ["/images/work-marketplace1.jpeg", "/images/work-marketplace2.jpeg"],
   },
 ];
 
