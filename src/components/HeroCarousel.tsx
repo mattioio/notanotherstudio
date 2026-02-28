@@ -3,18 +3,10 @@
 import { useState, useEffect } from "react";
 
 const slides = [
-  {
-    src: "https://res.cloudinary.com/dg9wgfyu8/image/upload/v1765641946/markets/markets/market_main_1765641946405_IMG_4909.jpeg.jpg",
-    alt: "Market Place Hounslow",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1592595896551-12b371d546d5?w=900&h=1100&fit=crop",
-    alt: "Placeholder project",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&h=1100&fit=crop",
-    alt: "Placeholder project",
-  },
+  { src: "/images/banner1.jpeg", alt: "Not Another Studio — project work" },
+  { src: "/images/banner2.jpeg", alt: "Not Another Studio — project work" },
+  { src: "/images/banner3.jpeg", alt: "Not Another Studio — project work" },
+  { src: "/images/banner4.jpeg", alt: "Not Another Studio — project work" },
 ];
 
 export default function HeroCarousel() {

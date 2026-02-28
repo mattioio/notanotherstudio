@@ -3,6 +3,7 @@ import ScrollAnimations from "@/components/ScrollAnimations";
 import PackagesSection from "@/components/PackagesSection";
 import HomeContactSection from "@/components/HomeContactSection";
 import HeroCarousel from "@/components/HeroCarousel";
+import WorkSection from "@/components/WorkSection";
 
 export const metadata: Metadata = {
   title: "Not Another Studio | Web, Print & Brand for Commercial Letting Agencies",
@@ -54,56 +55,6 @@ const services = [
   },
 ];
 
-const workItems = [
-  {
-    span: "lg:col-span-7 lg:row-span-2",
-    minH: "min-h-[440px]",
-    tag: "Brand + Web + Print",
-    title: "Market Place Hounslow",
-    bg: "https://res.cloudinary.com/dg9wgfyu8/image/upload/v1765641946/markets/markets/market_main_1765641946405_IMG_4909.jpeg.jpg",
-  },
-  {
-    span: "lg:col-span-5",
-    minH: "min-h-[220px]",
-    tag: "Food Market",
-    title: "Market Place Hounslow",
-    bg: "https://www.restaurantonline.co.uk/resizer/v2/2RGZUZBTLRPF5LGMWHUQMTFCXM.jpg?auth=623d6c918babaa5e6b8ede43072e715797577e3704afb22a20c5de6198cb7692&width=1200&height=630&smart=true",
-  },
-  {
-    span: "lg:col-span-5",
-    minH: "min-h-[220px]",
-    tag: "Web + Brand",
-    title: "Jenkins Law",
-    bg: "https://cdn.prod.website-files.com/62e312967830b91e1b2f8bbf/68f75db175545bddd450a454_Main%20Photo.jpg",
-  },
-  {
-    span: "lg:col-span-4",
-    minH: "min-h-[220px]",
-    tag: "Web + Brand",
-    title: "Neill Mylroie Real Estate",
-    bg: null,
-    gradient: "linear-gradient(135deg, #0d1824 0%, #1a2d3d 100%)",
-    deco: "NM.",
-  },
-  {
-    span: "lg:col-span-4",
-    minH: "min-h-[220px]",
-    tag: "Your project here",
-    title: "Coming soon",
-    bg: null,
-    gradient: "linear-gradient(135deg, #1c2b2b, #2d4a4a)",
-    deco: "WEB",
-  },
-  {
-    span: "lg:col-span-4",
-    minH: "min-h-[220px]",
-    tag: "Your project here",
-    title: "Coming soon",
-    bg: null,
-    gradient: "linear-gradient(135deg, #2b1c2b, #4a2d4a)",
-    deco: "PRT",
-  },
-];
 
 const steps = [
   {
@@ -236,52 +187,7 @@ export default function HomePage() {
       </section>
 
       {/* ── WORK ── */}
-      <section id="work" className="px-6 md:px-12 py-24 bg-[#0d0d0d] text-white">
-        <div className="flex items-end justify-between mb-15 gap-6 flex-wrap">
-          <h2
-            className="syne leading-[1.05] tracking-[-0.03em] max-w-[500px] fade-up"
-            style={{ fontSize: "clamp(36px, 4vw, 56px)" }}
-          >
-            Work that wins business
-          </h2>
-          <a
-            href="/#contact"
-            className="inline-block px-8 py-4 bg-[#f5f3ef] text-[#0d0d0d] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] transition-colors fade-up flex-shrink-0"
-          >
-            Start a project
-          </a>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-12 gap-[2px]">
-          {workItems.map(({ span, minH, tag, title, bg, gradient, deco }, i) => (
-            <div
-              key={i}
-              className={`relative overflow-hidden ${span} fade-up ${i > 0 ? `fade-up-delay-${Math.min(i, 3)}` : ""}`}
-            >
-              <div
-                className={`relative w-full flex flex-col items-start justify-end p-6 ${minH}`}
-                style={{
-                  background: bg ? `url(${bg}) center/cover no-repeat` : gradient,
-                }}
-              >
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
-                {/* Decorative text */}
-                {deco && (
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.06] syne text-[80px] text-white whitespace-nowrap select-none pointer-events-none">
-                    {deco}
-                  </div>
-                )}
-                <div className="relative z-10">
-                  <div className="text-[10px] font-semibold tracking-[0.12em] uppercase text-[#f0c93a] mb-1.5">
-                    {tag}
-                  </div>
-                  <div className="syne text-[15px] text-white">{title}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <WorkSection />
 
       {/* ── PACKAGES ── */}
       <PackagesSection />
