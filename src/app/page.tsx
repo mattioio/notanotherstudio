@@ -124,7 +124,7 @@ export default function HomePage() {
         <div
           className="relative flex-1 overflow-hidden"
           style={{
-            height: 'clamp(40vh, 50vh, 75vh)',
+            height: 'clamp(40vh, 70vh, 90vh)',
             minHeight: '40vh',
           }}
         >
