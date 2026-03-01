@@ -121,7 +121,7 @@ export default function HomePage() {
         </div>
 
         {/* Right — full-bleed carousel, 62% of width */}
-        <div className="relative h-[65vh] lg:h-auto flex-1 overflow-hidden">
+        <div className="relative h-[75vh] md:h-[70vh] lg:h-auto flex-1 overflow-hidden">
           <HeroCarousel />
         </div>
       </section>
