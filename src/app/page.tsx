@@ -28,7 +28,7 @@ const services = [
     name: "Web & Email",
     desc: "Custom sites with a property CMS your team can manage. Built to win instructions and capture enquiries—no developer needed.",
     from: "£1,000+",
-    features: ["Marketing site with property CMS", "Mobile-first, SEO-optimised build", "Tenant enquiry forms & lead capture", "Ongoing support & hosting add-on"],
+    features: ["Landing pages", "Full property sites", "Email marketing", "Hosting included"],
   },
   {
     slug: "print",
@@ -40,7 +40,7 @@ const services = [
     name: "Print & Marketing",
     desc: "Brochures, packs, and stationery that sell. Professional design that stands out from template work.",
     from: "£300+",
-    features: ["Letting brochures & floor plan layouts", "Investor & development presentations", "Business card & stationery design", "Print-ready PDF + editable source files"],
+    features: ["Letting brochures", "Investor presentations", "Business cards & stationery", "Print ready"],
   },
   {
     slug: "brand",
@@ -52,7 +52,7 @@ const services = [
     name: "Brand Design",
     desc: "Distinctive branding that builds trust and makes you memorable. Complete identity system to stand out.",
     from: "£1,000+",
-    features: ["Logo design & visual identity", "Colour, type & brand guidelines", "Social media & digital asset kit", "Full rebrand & refresh options"],
+    features: ["Logo design", "Brand guidelines", "Digital assets", "Refresh options"],
   },
 ];
 
