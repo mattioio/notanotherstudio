@@ -26,7 +26,7 @@ const services = [
       </svg>
     ),
     name: "Web Packages",
-    desc: "Your website is the first thing a landlord checks before calling you. We build sites that make commercial letting agencies look credible, professional, and worth instructing, with a property CMS your team can run without a developer.",
+    desc: "Custom sites with a property CMS your team can manage. Built to win instructions and capture enquiries—no developer needed.",
     from: "£1,000+",
     features: ["Marketing site with property CMS", "Mobile-first, SEO-optimised build", "Tenant enquiry forms & lead capture", "Ongoing support & hosting add-on"],
   },
@@ -38,7 +38,7 @@ const services = [
       </svg>
     ),
     name: "Print Packages",
-    desc: "When you're sitting in front of a landlord or walking a prospective tenant round a space, your print materials are doing the selling. We design brochures and packs that reflect the quality of your service, not a Word template from 2015.",
+    desc: "Brochures, packs, and stationery that sell. Professional design that stands out from template work.",
     from: "£300+",
     features: ["Letting brochures & floor plan layouts", "Investor & development presentations", "Business card & stationery design", "Print-ready PDF + editable source files"],
   },
@@ -50,7 +50,7 @@ const services = [
       </svg>
     ),
     name: "Brand Packages",
-    desc: "Trust is everything in lettings. A distinctive brand is how you earn it. We give commercial letting agencies the visual identity to stand out in a crowded market and keep clients coming back.",
+    desc: "Distinctive branding that builds trust and makes you memorable. Complete identity system to stand out.",
     from: "£1,000+",
     features: ["Logo design & visual identity", "Colour, type & brand guidelines", "Social media & digital asset kit", "Full rebrand & refresh options"],
   },
