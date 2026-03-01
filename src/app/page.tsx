@@ -147,7 +147,7 @@ export default function HomePage() {
       </div>
 
       {/* ── SERVICES ── */}
-      <section id="services" className="px-6 md:px-12 py-24">
+      <section id="services" className="px-6 md:px-12 py-24 mx-auto max-w-7xl">
         <div className="section-label mb-14 fade-up">What we do</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-[2px]">
           {services.map(({ slug, icon, name, desc, from, features }, i) => (
@@ -200,7 +200,7 @@ export default function HomePage() {
       <PackagesSection />
 
       {/* ── PROCESS ── */}
-      <section id="process" className="px-6 md:px-12 py-24 grid grid-cols-1 lg:grid-cols-2 gap-20 items-end">
+      <section id="process" className="px-6 md:px-12 py-24 mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-20 items-end">
         <div>
           <div className="section-label mb-14 fade-up">How we work</div>
           <h2
