@@ -34,12 +34,12 @@ export default function Nav() {
         </a>
 
         {/* Desktop nav */}
-        <ul className="hidden md:flex items-center gap-9 list-none m-0 p-0">
+        <ul className="hidden md:flex items-center gap-4 lg:gap-9 list-none m-0 p-0 flex-shrink">
           {navLinks.map(({ label, href }) => (
             <li key={href}>
               <a
                 href={href}
-                className="text-sm font-medium text-[#0d0d0d] opacity-70 hover:opacity-100 transition-opacity no-underline"
+                className="text-[13px] lg:text-sm font-medium text-[#0d0d0d] opacity-70 hover:opacity-100 transition-opacity no-underline whitespace-nowrap"
               >
                 {label}
               </a>
@@ -48,7 +48,7 @@ export default function Nav() {
           <li>
             <a
               href="/#contact"
-              className="inline-flex items-center px-[22px] py-3 bg-[#0d0d0d] text-[#f5f3ef] font-bold text-[13px] tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] transition-colors"
+              className="inline-flex items-center px-4 lg:px-[22px] py-2.5 lg:py-3 bg-[#0d0d0d] text-[#f5f3ef] font-bold text-[11px] lg:text-[13px] tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] transition-colors flex-shrink-0"
             >
               Work with us
             </a>

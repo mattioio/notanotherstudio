@@ -88,10 +88,10 @@ export default function HomePage() {
       {/* ── HERO ── */}
       <section
         id="home"
-        className="relative pt-[72px] min-h-screen flex flex-col lg:flex-row"
+        className="relative pt-[72px] min-h-screen flex flex-col-reverse lg:flex-row"
       >
         {/* Left — text */}
-        <div className="relative z-10 flex items-center px-6 md:px-12 py-20 lg:py-0 lg:w-[38%] flex-shrink-0">
+        <div className="relative z-10 flex items-center px-6 md:px-12 py-12 lg:py-0 lg:w-[38%] flex-shrink-0">
           <div className="max-w-[480px]">
             <div className="eyebrow fade-up visible mb-6">For Commercial Letting Agencies</div>
             <h1
@@ -121,7 +121,7 @@ export default function HomePage() {
         </div>
 
         {/* Right — full-bleed carousel, 62% of width */}
-        <div className="relative h-[50vh] lg:h-auto flex-1 overflow-hidden">
+        <div className="relative h-[65vh] lg:h-auto flex-1 overflow-hidden">
           <HeroCarousel />
         </div>
       </section>
