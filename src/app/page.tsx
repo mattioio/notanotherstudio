@@ -40,7 +40,7 @@ const services = [
     name: "Print & Marketing",
     desc: "Brochures, packs, and stationery that sell. Professional design that stands out from template work.",
     from: "£300+",
-    features: ["Letting brochures", "Investor presentations", "Business cards & stationery", "Print ready"],
+    features: ["Letting brochures", "Investor presentations", "Business cards & stationery"],
   },
   {
     slug: "brand",
