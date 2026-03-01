@@ -32,6 +32,13 @@ const projects: Project[] = [
     services: ["Brand", "Web", "Print"],
     images: ["/images/work-marketplace1.jpeg", "/images/work-marketplace2.jpeg"],
   },
+  {
+    num: "04",
+    client: "Your project here",
+    location: "We have space for one new client",
+    services: [],
+    images: ["/images/work-yourproject.jpeg"],
+  },
 ];
 
 function EyeIcon({ active }: { active: boolean }) {
@@ -137,27 +144,48 @@ export default function WorkSection() {
                     {client}
                   </div>
                   <div className="flex items-center gap-3 mt-2 flex-wrap">
-                    <span className="text-[11px] text-white/30 font-medium tracking-widest uppercase">
-                      {location}
-                    </span>
-                    <span className="text-white/15">·</span>
-                    {services.map((s) => (
-                      <span
-                        key={s}
-                        className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 transition-all duration-300"
-                        style={{
-                          background: active === i ? "rgba(240,201,58,0.15)" : "rgba(255,255,255,0.06)",
-                          color: active === i ? "#f0c93a" : "rgba(255,255,255,0.3)",
-                        }}
-                      >
-                        {s}
+                    {services.length > 0 ? (
+                      <>
+                        <span className="text-[11px] text-white/30 font-medium tracking-widest uppercase">
+                          {location}
+                        </span>
+                        <span className="text-white/15">·</span>
+                        {services.map((s) => (
+                          <span
+                            key={s}
+                            className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 transition-all duration-300"
+                            style={{
+                              background: active === i ? "rgba(240,201,58,0.15)" : "rgba(255,255,255,0.06)",
+                              color: active === i ? "#f0c93a" : "rgba(255,255,255,0.3)",
+                            }}
+                          >
+                            {s}
+                          </span>
+                        ))}
+                      </>
+                    ) : (
+                      <span className="text-[11px] text-white/30 font-medium tracking-widest uppercase">
+                        {location}
                       </span>
-                    ))}
+                    )}
                   </div>
                 </div>
 
-                {/* Eye icon */}
-                <EyeIcon active={active === i} />
+                {/* Eye icon or CTA button */}
+                {services.length > 0 ? (
+                  <EyeIcon active={active === i} />
+                ) : (
+                  <a
+                    href="/#contact"
+                    className="flex-shrink-0 text-[11px] font-bold tracking-[0.1em] uppercase no-underline px-4 py-2.5 border transition-all duration-200 whitespace-nowrap"
+                    style={{
+                      borderColor: active === i ? "#f0c93a" : "rgba(240,201,58,0.35)",
+                      color: active === i ? "#f0c93a" : "rgba(240,201,58,0.6)",
+                    }}
+                  >
+                    Get in touch →
+                  </a>
+                )}
               </div>
 
               {/* Mobile: expandable image */}
@@ -196,25 +224,6 @@ export default function WorkSection() {
               </div>
             </div>
           ))}
-
-          {/* Your project here */}
-          <div className="border-b border-white/8 px-6 md:px-12 py-8 flex items-center gap-6 md:gap-10">
-            <span className="syne text-[13px] text-white/20 flex-shrink-0 min-w-[48px]">04</span>
-            <div className="flex-1">
-              <div className="syne text-[clamp(18px,1.8vw,26px)] tracking-[-0.02em] text-white/45">
-                Your project here
-              </div>
-              <div className="text-[11px] text-white/30 mt-2 uppercase tracking-widest font-medium">
-                We have space for one new client
-              </div>
-            </div>
-            <a
-              href="/#contact"
-              className="flex-shrink-0 text-[11px] font-bold tracking-[0.1em] uppercase no-underline px-4 py-2.5 border border-[#f0c93a]/35 text-[#f0c93a]/60 hover:border-[#f0c93a] hover:text-[#f0c93a] transition-all duration-200 whitespace-nowrap"
-            >
-              Get in touch →
-            </a>
-          </div>
         </div>
 
         {/* Right: sticky full-height image panel */}
