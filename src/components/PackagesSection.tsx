@@ -107,15 +107,15 @@ export default function PackagesSection() {
       </div>
 
       {/* Tabs */}
-      <div className="flex justify-center gap-1 mb-12 border-b border-black/12">
+      <div className="flex justify-center gap-1 mb-12">
         {tabs.map(({ key, label }) => (
           <button
             key={key}
             onClick={() => handleTabChange(key)}
-            className={`px-7 py-3 text-[13px] font-bold tracking-[0.05em] uppercase border-none cursor-pointer transition-colors duration-200 border-b-2 -mb-px ${
+            className={`px-7 py-3 text-[13px] font-bold tracking-[0.05em] uppercase border-none cursor-pointer transition-all duration-200 ${
               activeTab === key
-                ? "text-[#0d0d0d] border-[#0d0d0d] bg-transparent"
-                : "text-[#6b6b6b] border-transparent bg-transparent hover:text-[#0d0d0d]"
+                ? "bg-[#0d0d0d] text-white"
+                : "bg-transparent text-[#aaaaaa] hover:text-[#0d0d0d]"
             }`}
           >
             {label}

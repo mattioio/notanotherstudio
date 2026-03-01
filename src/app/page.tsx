@@ -50,7 +50,7 @@ const services = [
       </svg>
     ),
     name: "Brand Packages",
-    desc: "Landlords choose agents they trust. A strong, consistent brand builds that trust before you've even picked up the phone. We give commercial letting agencies the visual identity to stand out in a crowded market and keep clients coming back.",
+    desc: "Trust is everything in lettings. A distinctive brand is how you earn it. We give commercial letting agencies the visual identity to stand out in a crowded market and keep clients coming back.",
     from: "£1,000+",
     features: ["Logo design & visual identity", "Colour, type & brand guidelines", "Social media & digital asset kit", "Full rebrand & refresh options"],
   },
@@ -101,7 +101,7 @@ export default function HomePage() {
               The agency behind your agency
             </h1>
             <p className="text-[17px] text-[#6b6b6b] font-light leading-[1.6] max-w-[400px] mb-11 fade-up visible fade-up-delay-2">
-              Your website, brand, and print materials should do the selling before you&apos;ve even picked up the phone. We build them to win instructions, not just look the part.
+              We build your website, brand and print to win instructions upfront. Professional, distinctive, and built to work from day one.
             </p>
             <div className="flex flex-wrap items-center gap-7 fade-up visible fade-up-delay-3">
               <a
