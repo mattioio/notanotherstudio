@@ -25,7 +25,7 @@ const services = [
         <rect x="2" y="3" width="20" height="14" rx="0" /><path d="M8 21h8M12 17v4" />
       </svg>
     ),
-    name: "Web Packages",
+    name: "Web & Email",
     desc: "Custom sites with a property CMS your team can manage. Built to win instructions and capture enquiries—no developer needed.",
     from: "£1,000+",
     features: ["Marketing site with property CMS", "Mobile-first, SEO-optimised build", "Tenant enquiry forms & lead capture", "Ongoing support & hosting add-on"],
@@ -37,7 +37,7 @@ const services = [
         <path d="M14 2H4v20h16V8z" fill="none" /><polyline points="14 2 14 8 20 8" fill="none" /><line x1="7" y1="13" x2="17" y2="13" /><line x1="7" y1="17" x2="17" y2="17" />
       </svg>
     ),
-    name: "Print Packages",
+    name: "Print & Marketing",
     desc: "Brochures, packs, and stationery that sell. Professional design that stands out from template work.",
     from: "£300+",
     features: ["Letting brochures & floor plan layouts", "Investor & development presentations", "Business card & stationery design", "Print-ready PDF + editable source files"],
@@ -49,7 +49,7 @@ const services = [
         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
       </svg>
     ),
-    name: "Brand Packages",
+    name: "Brand Design",
     desc: "Distinctive branding that builds trust and makes you memorable. Complete identity system to stand out.",
     from: "£1,000+",
     features: ["Logo design & visual identity", "Colour, type & brand guidelines", "Social media & digital asset kit", "Full rebrand & refresh options"],
