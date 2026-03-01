@@ -121,7 +121,13 @@ export default function HomePage() {
         </div>
 
         {/* Right — full-bleed carousel, 62% of width */}
-        <div className="relative h-[75vh] md:h-[70vh] lg:h-auto flex-1 overflow-hidden">
+        <div
+          className="relative flex-1 overflow-hidden"
+          style={{
+            height: 'clamp(60vh, 75vh, 100vh)',
+            minHeight: '75vh',
+          }}
+        >
           <HeroCarousel />
         </div>
       </section>
