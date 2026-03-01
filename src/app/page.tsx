@@ -124,8 +124,8 @@ export default function HomePage() {
         <div
           className="relative flex-1 overflow-hidden"
           style={{
-            height: 'clamp(60vh, 75vh, 100vh)',
-            minHeight: '75vh',
+            height: 'clamp(40vh, 50vh, 75vh)',
+            minHeight: '40vh',
           }}
         >
           <HeroCarousel />
