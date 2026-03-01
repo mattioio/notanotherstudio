@@ -48,15 +48,14 @@ export default function HeroCarousel() {
             aria-label={`Slide ${i + 1}`}
             style={{
               width: i === current ? "48px" : "8px",
-              height: "6px",
+              height: "10px",
               background: i === current ? "#f0c93a" : "rgba(255,255,255,0.7)",
               border: "none",
               cursor: "pointer",
               padding: 0,
               flexShrink: 0,
               transition: "width 0.35s ease, background 0.35s ease",
-              borderRadius: "3px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+              borderRadius: "4px",
             }}
           />
         ))}
