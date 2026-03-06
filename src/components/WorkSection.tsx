@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-type Project = {
+export type Project = {
   num: string;
   client: string;
   location: string;
@@ -10,7 +10,7 @@ type Project = {
   images: string[];
 };
 
-const projects: Project[] = [
+const commercialProjects: Project[] = [
   {
     num: "01",
     client: "Jenkins Law",
@@ -34,6 +34,13 @@ const projects: Project[] = [
   },
   {
     num: "04",
+    client: "Kingsland Dalston",
+    location: "London",
+    services: ["Web", "Brand"],
+    images: ["/images/work-kingsland1.jpeg", "/images/work-kingsland2.jpeg"],
+  },
+  {
+    num: "05",
     client: "Your project here",
     location: "We have space for one new client",
     services: [],
@@ -64,7 +71,11 @@ function EyeIcon({ active }: { active: boolean }) {
   );
 }
 
-export default function WorkSection() {
+interface WorkSectionProps {
+  projects?: Project[];
+}
+
+export default function WorkSection({ projects = commercialProjects }: WorkSectionProps) {
   const [active, setActive] = useState(0);
   const [carouselIdx, setCarouselIdx] = useState(0);
 
@@ -75,7 +86,7 @@ export default function WorkSection() {
       setCarouselIdx((prev) => (prev + 1) % imgs.length);
     }, 3500);
     return () => clearInterval(id);
-  }, [active]);
+  }, [active, projects]);
 
   const handleMouseEnter = (i: number) => {
     if (i !== active) {
@@ -85,9 +96,19 @@ export default function WorkSection() {
   };
 
   return (
-    <section id="work" className="bg-[#0d0d0d] text-white">
+    <section id="work" className="relative bg-[#0d0d0d] text-white">
+      {/* Grunge texture */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          backgroundImage: "url('/images/Texturelabs_Grunge_316M.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.2,
+        }}
+      />
       {/* ── Header ── */}
-      <div className="px-6 md:px-12 pt-24 pb-12 flex items-end justify-between gap-6 flex-wrap border-b border-white/10">
+      <div className="relative z-10 px-6 md:px-12 pt-24 pb-12 flex items-end justify-between gap-6 flex-wrap border-b border-white/10">
         <h2
           className="syne leading-[1.0] tracking-[-0.03em] fade-up"
           style={{ fontSize: "clamp(36px, 4vw, 56px)" }}
@@ -95,7 +116,7 @@ export default function WorkSection() {
           Work that wins<br />business
         </h2>
         <a
-          href="/#contact"
+          href="#contact"
           className="inline-block px-8 py-4 bg-[#f0c93a] text-[#0d0d0d] font-bold text-sm tracking-[0.05em] uppercase no-underline hover:bg-white transition-colors fade-up flex-shrink-0"
         >
           Start a project →
@@ -103,7 +124,7 @@ export default function WorkSection() {
       </div>
 
       {/* ── Body: list left + sticky image right ── */}
-      <div className="flex flex-col lg:flex-row">
+      <div className="relative z-10 flex flex-col lg:flex-row">
 
         {/* Left: project list */}
         <div className="lg:w-[48%] flex flex-col">
@@ -176,7 +197,7 @@ export default function WorkSection() {
                   <EyeIcon active={active === i} />
                 ) : (
                   <a
-                    href="/#contact"
+                    href="#contact"
                     className="flex-shrink-0 text-[11px] font-bold tracking-[0.1em] uppercase no-underline px-4 py-2.5 border transition-all duration-200 whitespace-nowrap"
                     style={{
                       borderColor: active === i ? "#f0c93a" : "rgba(240,201,58,0.35)",
