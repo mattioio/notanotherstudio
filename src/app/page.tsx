@@ -1,253 +1,291 @@
-import type { Metadata } from "next";
-import ScrollAnimations from "@/components/ScrollAnimations";
-import PackagesSection from "@/components/PackagesSection";
-import HomeContactSection from "@/components/HomeContactSection";
-import HeroCarousel from "@/components/HeroCarousel";
-import WorkSection from "@/components/WorkSection";
-import ScrollBadge from "@/components/ScrollBadge";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Not Another Studio | Web, Print & Brand for Commercial Letting Agencies",
+import { useState, useEffect, useRef, type CSSProperties } from "react";
+
+// ── Data ─────────────────────────────────────────────────────────────────────
+
+const industryImages: Record<string, string[]> = {
+  "product-design":        ["/images/product-design/banner1.jpeg", "/images/product-design/banner2.jpeg", "/images/product-design/banner3.jpeg", "/images/product-design/banner4.jpeg"],
+  "commercial-properties": ["/images/commercial-property/banner1.jpeg", "/images/commercial-property/banner2.jpeg", "/images/commercial-property/banner3.jpeg", "/images/commercial-property/banner4.jpeg"],
+  "food":                  ["/images/food/banner1.jpeg", "/images/food/banner2.jpeg", "/images/food/banner3.jpeg", "/images/food/banner4.jpeg"],
 };
 
-const marqueeItems = [
-  "Web Packages", "Letting Agency Sites", "Property CMS", "Letting Brochures",
-  "Business Cards", "Brand Identity", "Brand Refresh", "Commercial Lettings",
-  "Web Packages", "Letting Agency Sites", "Property CMS", "Letting Brochures",
-  "Business Cards", "Brand Identity", "Brand Refresh", "Commercial Lettings",
+const industries = [
+  { num: "01", label: "Product Design",      slug: "product-design"        },
+  { num: "02", label: "Commercial Property", slug: "commercial-properties" },
+  { num: "03", label: "Food & Hospitality",  slug: "food"                  },
 ];
 
-const services = [
-  {
-    slug: "web",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
-        <rect x="2" y="3" width="20" height="14" rx="0" /><path d="M8 21h8M12 17v4" />
-      </svg>
-    ),
-    name: "Web & Email",
-    desc: "Custom sites with a property CMS your team can manage. Built to win instructions and capture enquiries—no developer needed.",
-    from: "£1,000+",
-    features: ["Landing pages", "Full property sites", "Email marketing", "Hosting included"],
-  },
-  {
-    slug: "print",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
-        <path d="M14 2H4v20h16V8z" fill="none" /><polyline points="14 2 14 8 20 8" fill="none" /><line x1="7" y1="13" x2="17" y2="13" /><line x1="7" y1="17" x2="17" y2="17" />
-      </svg>
-    ),
-    name: "Print & Marketing",
-    desc: "Brochures, packs, and stationery that sell. Professional design that stands out from template work.",
-    from: "£300+",
-    features: ["Letting brochures", "Investor presentations", "Business cards & stationery"],
-  },
-  {
-    slug: "brand",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-      </svg>
-    ),
-    name: "Brand Design",
-    desc: "Distinctive branding that builds trust and makes you memorable. Complete identity system to stand out.",
-    from: "£1,000+",
-    features: ["Logo design", "Brand guidelines", "Digital assets", "Refresh options"],
-  },
-];
+const FW: CSSProperties = { width: "100vw", marginLeft: "calc(-50vw + 50%)" };
+const FS = "clamp(44px, 6.5vw, 92px)";
+const DARK_BASE: CSSProperties = { ...FW, background: "#0d0d0d", minHeight: 680, marginTop: "-5rem" };
 
+// Heading font CSS vars — set globally by FontToggle, applied here via var()
+const H_STYLE: CSSProperties = {
+  fontFamily:    "var(--heading-font)",
+  fontWeight:    "var(--heading-weight)" as CSSProperties["fontWeight"],
+  letterSpacing: "var(--heading-tracking)",
+};
 
-const steps = [
-  {
-    num: "01",
-    title: "Discovery Call",
-    body: "We learn about your agency, your clients, and your goals. Usually 30 minutes. No prep required.",
-  },
-  {
-    num: "02",
-    title: "Proposal & Quote",
-    body: "You receive a clear scope, fixed price, and timeline. No surprises, no scope creep.",
-  },
-  {
-    num: "03",
-    title: "Design & Build",
-    body: "We handle everything. You review and give feedback at two structured checkpoints. Nothing more.",
-  },
-  {
-    num: "04",
-    title: "Launch & Handover",
-    body: "We go live, train your team on any CMS, and hand over all files so you're completely self-sufficient from day one.",
-  },
-];
+// ════════════════════════════════════════════════════════════════════════════
+// HERO — CONSTELLATION
+// ════════════════════════════════════════════════════════════════════════════
+function HeroConstellation({ textStyle = 1 }: { textStyle?: number }) {
+  const cvRef  = useRef<HTMLCanvasElement>(null);
+  const cntRef = useRef<HTMLDivElement>(null);
+  const mouse  = useRef({ x: -999, y: -999 });
 
-export default function HomePage() {
+  useEffect(() => {
+    const canvas = cvRef.current, container = cntRef.current;
+    if (!canvas || !container) return;
+    const ctx = canvas.getContext("2d")!;
+    let W = container.offsetWidth, H = container.offsetHeight;
+    canvas.width = W; canvas.height = H;
+
+    const N = 62;
+    const nodes = Array.from({ length: N }, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.45, vy: (Math.random() - 0.5) * 0.45,
+      r: 1.2 + Math.random() * 1.8,
+    }));
+
+    const LINK = 130;
+    let raf: number;
+
+    const tick = () => {
+      ctx.clearRect(0, 0, W, H);
+      nodes.forEach(n => {
+        const dx = n.x - mouse.current.x, dy = n.y - mouse.current.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 110 && d > 0) { n.vx += dx / d * 0.6 * (1 - d / 110); n.vy += dy / d * 0.6 * (1 - d / 110); }
+        n.vx *= 0.975; n.vy *= 0.975;
+        const spd = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
+        if (spd > 1.8) { n.vx *= 1.8 / spd; n.vy *= 1.8 / spd; }
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < 0) { n.x = 0; n.vx *= -1; } if (n.x > W) { n.x = W; n.vx *= -1; }
+        if (n.y < 0) { n.y = 0; n.vy *= -1; } if (n.y > H) { n.y = H; n.vy *= -1; }
+      });
+      for (let i = 0; i < N; i++) {
+        for (let j = i + 1; j < N; j++) {
+          const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < LINK) {
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.strokeStyle = `rgba(255,255,255,${(1 - d / LINK) * 0.3})`;
+            ctx.lineWidth = 0.6; ctx.stroke();
+          }
+        }
+      }
+      nodes.forEach(n => {
+        const dx = n.x - mouse.current.x, dy = n.y - mouse.current.y;
+        const near = Math.sqrt(dx * dx + dy * dy) < 70;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, near ? n.r * 1.8 : n.r, 0, Math.PI * 2);
+        ctx.fillStyle = near ? "#f0c93a" : "rgba(255,255,255,0.65)";
+        ctx.fill();
+      });
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    const onMove = (e: MouseEvent) => {
+      const r = container.getBoundingClientRect();
+      mouse.current = { x: e.clientX - r.left, y: e.clientY - r.top };
+    };
+    const onLeave = () => { mouse.current = { x: -999, y: -999 }; };
+    window.addEventListener("mousemove", onMove);
+    container.addEventListener("mouseleave", onLeave);
+    const onResize = () => { W = container.offsetWidth; H = container.offsetHeight; canvas.width = W; canvas.height = H; };
+    window.addEventListener("resize", onResize);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("resize", onResize);
+      container.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
+
+  const shellW = (): CSSProperties => ({
+    position: "absolute", inset: "-0.12em -0.14em",
+    overflow: "hidden", pointerEvents: "none",
+  });
+
+  const bg = (anim: string, extra?: Partial<CSSProperties>): CSSProperties => ({
+    position: "absolute", inset: "7px",
+    background: "#f0c93a",
+    filter: "url(#nas-rough)",
+    willChange: "transform",
+    animation: anim.replace("forwards", "both"),
+    ...extra,
+  });
+
   return (
-    <>
-      <ScrollAnimations />
-
-      {/* ── HERO ── */}
-      <section
-        id="home"
-        className="relative pt-[72px] min-h-screen flex flex-col-reverse lg:flex-row"
-      >
-        {/* Left — text */}
-        <div className="relative z-10 flex items-center px-6 md:px-12 py-12 lg:py-0 lg:w-[38%] flex-shrink-0">
-          <div className="max-w-[480px]">
-            <div className="eyebrow fade-up visible mb-6">For Commercial Letting Agencies</div>
-            <h1
-              className="syne leading-[1.0] tracking-[-0.03em] mb-7 fade-up visible fade-up-delay-1"
-              style={{ fontSize: "clamp(44px, 6vw, 76px)" }}
-            >
-              The agency behind your agency
-            </h1>
-            <p className="text-[17px] text-[#6b6b6b] font-light leading-[1.6] max-w-[400px] mb-11 fade-up visible fade-up-delay-2">
-              We build your website, brand and print to win instructions upfront. Professional, distinctive, and built to work from day one.
-            </p>
-            <div className="flex flex-wrap items-center gap-7 fade-up visible fade-up-delay-3">
-              <a
-                href="/#packages"
-                className="inline-block px-8 py-4 bg-[#0d0d0d] text-[#f5f3ef] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] hover:-translate-y-0.5 transition-all"
-              >
-                View Packages
-              </a>
-              <a
-                href="/#work"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0d0d0d] no-underline border-b border-[#0d0d0d] pb-0.5 hover:text-[#6b6b6b] hover:border-[#6b6b6b] transition-colors"
-              >
-                See our work →
-              </a>
-            </div>
-          </div>
+    <div ref={cntRef} className="relative overflow-hidden select-none" style={DARK_BASE}>
+      <svg width="0" height="0" style={{ position: "absolute" }}>
+        <defs>
+          <filter id="nas-rough" x="-8%" y="-30%" width="116%" height="160%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="8" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+      </svg>
+      <style>{`
+        @keyframes nas-up    { from { opacity:0; transform:translateY(18px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes nas-slide { from { transform:translateX(-108%) } to { transform:translateX(0) } }
+      `}</style>
+      <canvas ref={cvRef} className="absolute inset-0" style={{ width: "100%", height: "100%" }} />
+      <div className="absolute inset-0 pointer-events-none" style={{
+        zIndex: 5,
+        background: "radial-gradient(ellipse 75% 80% at 50% 50%, transparent 30%, #0d0d0d 80%)",
+      }} />
+      {/* key forces remount + animation replay on font switch */}
+      <div key={textStyle} className="relative flex flex-col items-center justify-center gap-8 px-10" style={{ minHeight: 680, zIndex: 10 }}>
+        <div className="text-center" style={{ ...H_STYLE, fontSize: FS, lineHeight: "var(--heading-lh)" }}>
+          {([["Better", "thinking."], ["Clearer", "design."]] as const).map(([adj, noun], li) => {
+            const adjD = 0.1 + li * 0.44;
+            const hlD  = 0.32 + li * 0.44;
+            return (
+              <div key={noun}>
+                <span style={{
+                  color: "white", display: "inline-block", marginRight: "0.28em",
+                  animation: `nas-up 0.5s cubic-bezier(0.22,1,0.36,1) ${adjD}s both`,
+                }}>{adj}</span>
+                <span style={{ position: "relative", display: "inline-block" }}>
+                  <span aria-hidden style={shellW()}><span style={bg(
+                    `nas-slide 0.55s cubic-bezier(0.22,1,0.36,1) ${hlD}s both`
+                  )} /></span>
+                  <span style={{ position: "relative", zIndex: 1, color: "#0d0d0d" }}>{noun}</span>
+                </span>
+              </div>
+            );
+          })}
         </div>
+        <p className="syne text-center" style={{
+          fontSize: "clamp(13px, 1.1vw, 16px)",
+          color: "rgba(255,255,255,0.45)",
+          maxWidth: 420,
+          lineHeight: 1.65,
+          letterSpacing: "0.01em",
+          animation: "nas-up 0.7s cubic-bezier(0.22,1,0.36,1) 0.9s both",
+        }}>
+          Design is more than visuals. We help organisations understand the problem before solving it.
+        </p>
+      </div>
+    </div>
+  );
+}
 
-        {/* Right — full-bleed carousel, 62% of width */}
-        <div
-          className="relative flex-1 overflow-hidden"
-          style={{
-            height: 'clamp(40vh, 100vh, 100vh)',
-            minHeight: '40vh',
-          }}
-        >
-          <HeroCarousel />
-        </div>
-      </section>
+// ── Mobile card ───────────────────────────────────────────────────────────────
 
-      {/* ── MARQUEE ── */}
-      <div className="bg-[#0d0d0d] text-white py-4 overflow-hidden whitespace-nowrap">
-        <div className="inline-flex marquee-animate">
-          {marqueeItems.map((item, i) => (
-            <span
-              key={i}
-              className="inline-flex items-center gap-6 px-8 text-[12px] font-bold tracking-[0.12em] uppercase after:content-['✦'] after:text-[#f0c93a] after:text-[10px]"
-            >
-              {item}
-            </span>
-          ))}
+function MobileIndustryCard({ ind }: { ind: typeof industries[0] }) {
+  const images = industryImages[ind.slug];
+  const [imgIdx, setImgIdx] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setImgIdx(p => (p + 1) % images.length), 3000);
+    return () => clearInterval(id);
+  }, [images.length]);
+  return (
+    <a href={`/for/${ind.slug}`} className="block no-underline group">
+      <div className="relative w-full overflow-hidden" style={{ height: "56vw", maxHeight: 280 }}>
+        {images.map((src, i) => (
+          <div key={src} className="absolute inset-0" style={{ backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center", opacity: i === imgIdx ? 1 : 0, transition: "opacity 0.7s ease" }} />
+        ))}
+        <div className="absolute bottom-3 left-4 flex gap-1.5">
+          {images.map((_, i) => <div key={i} className="rounded-full transition-all duration-300" style={{ width: i === imgIdx ? 20 : 6, height: 6, backgroundColor: i === imgIdx ? "#f0c93a" : "rgba(255,255,255,0.5)" }} />)}
         </div>
       </div>
+      <div className="flex items-baseline gap-4 py-5 border-b border-black/10">
+        <span className="syne font-bold text-[#cccccc] flex-shrink-0" style={{ fontSize: 13 }}>{ind.num}</span>
+        <span className="leading-none flex-1" style={{ ...H_STYLE, fontSize: "clamp(24px,6vw,36px)", color: "#0d0d0d" }}>{ind.label}</span>
+        <span className="syne font-bold text-[#f0c93a] flex-shrink-0 transition-transform duration-300 group-hover:translate-x-1" style={{ fontSize: 22 }}>→</span>
+      </div>
+    </a>
+  );
+}
 
-      {/* ── SERVICES ── */}
-      <section id="services" className="px-6 md:px-12 py-24 mx-auto max-w-7xl">
-        <div className="section-label mb-14 fade-up">What we do</div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[2px]">
-          {services.map(({ slug, icon, name, desc, from, features }, i) => (
-            <a
-              key={slug}
-              href={`/#packages`}
-              className={`group block bg-[#f0ede6] hover:bg-[#0d0d0d] p-12 no-underline text-[#0d0d0d] hover:text-white transition-colors duration-300 cursor-pointer fade-up ${i === 1 ? "fade-up-delay-1" : i === 2 ? "fade-up-delay-2" : ""}`}
-            >
-              {/* Icon */}
-              <div className="w-11 h-11 bg-[#0d0d0d] group-hover:bg-[#f0c93a] text-white group-hover:text-[#0d0d0d] flex items-center justify-center mb-7 transition-colors duration-300">
-                {icon}
-              </div>
-              {/* Name */}
-              <div className="syne text-[22px] tracking-[-0.02em] mb-4">{name}</div>
-              {/* Desc */}
-              <p className="text-sm text-[#6b6b6b] group-hover:text-white/60 leading-[1.7] mb-7 font-light transition-colors duration-300">
-                {desc}
-              </p>
-              {/* Price */}
-              <div className="mb-7 pb-6 border-b border-black/12 group-hover:border-white/12 transition-colors duration-300">
-                <div className="text-[11px] font-semibold tracking-[0.1em] uppercase text-[#6b6b6b] group-hover:text-white/50 transition-colors duration-300">
-                  Starting from
-                </div>
-                <div className="syne text-[32px] tracking-[-0.03em]">{from}</div>
-              </div>
-              {/* Features */}
-              <ul className="list-none p-0 m-0 mb-8">
-                {features.map((f) => (
-                  <li
-                    key={f}
-                    className="flex items-center gap-2.5 text-[13px] py-2 border-b border-black/12 group-hover:border-white/8 transition-colors duration-300 font-normal"
-                  >
-                    <span className="opacity-50 text-xs">→</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <span className="inline-flex items-center gap-2 text-[13px] font-bold tracking-[0.05em] uppercase border-b border-current pb-[3px]">
-                View packages →
-              </span>
+// ── Page ──────────────────────────────────────────────────────────────────────
+
+export default function HomePage() {
+  const [hovered,   setHovered]   = useState<string | null>(null);
+  const [mouse,     setMouse]     = useState({ x: 0.5, y: 0.5 });
+  const [textStyle, setTextStyle] = useState(1);
+  const smoothRef = useRef({ x: 0.5, y: 0.5 });
+  const rafRef    = useRef<number | null>(null);
+  const cardRef   = useRef<HTMLDivElement | null>(null);
+
+  // Sync textStyle with FontToggle (for hero animation replay via key)
+  useEffect(() => {
+    const saved = parseInt(localStorage.getItem("nas-font") ?? "1", 10);
+    if (saved !== 1) setTextStyle(saved);
+    const handler = (e: Event) => setTextStyle((e as CustomEvent<number>).detail);
+    window.addEventListener("fontchange", handler);
+    return () => window.removeEventListener("fontchange", handler);
+  }, []);
+
+  const mouseImgIdx  = Math.min(3, Math.floor(mouse.x * 4));
+  const activeImages = hovered ? industryImages[hovered] : null;
+  const anyHovered   = hovered !== null;
+
+  useEffect(() => {
+    const animate = () => {
+      smoothRef.current.x += (mouse.x - smoothRef.current.x) * 0.1;
+      smoothRef.current.y += (mouse.y - smoothRef.current.y) * 0.1;
+      if (cardRef.current) {
+        cardRef.current.style.transform = `translate(${smoothRef.current.x * window.innerWidth + 60}px,${smoothRef.current.y * window.innerHeight - 120}px)`;
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [mouse]);
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-20"
+      onMouseMove={e => setMouse({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight })}>
+
+      <div className="relative z-10 w-full max-w-3xl mb-16 md:mb-20">
+        <HeroConstellation textStyle={textStyle} />
+      </div>
+
+      {/* Desktop industry list */}
+      <div className="relative z-10 w-full max-w-2xl hidden md:block">
+        <p className="syne font-bold tracking-[0.14em] uppercase mb-5" style={{ fontSize: 11, color: "#aaaaaa" }}>
+          Pick your industry
+        </p>
+        {industries.map(ind => {
+          const isH = hovered === ind.slug;
+          return (
+            <a key={ind.slug} href={`/for/${ind.slug}`}
+              onMouseEnter={() => setHovered(ind.slug)} onMouseLeave={() => setHovered(null)}
+              className="group flex items-baseline gap-10 py-5 border-b border-black/10 no-underline transition-all duration-200"
+              style={{ opacity: anyHovered && !isH ? 0.22 : 1 }}>
+              <span className="syne font-bold flex-shrink-0 leading-none transition-colors duration-200" style={{ fontSize: "clamp(12px,1.4vw,17px)", color: isH ? "#f0c93a" : "#cccccc", minWidth: "2.2rem" }}>{ind.num}</span>
+              <span className="leading-none flex-1" style={{ ...H_STYLE, fontSize: "clamp(26px,3.8vw,50px)", color: "#0d0d0d" }}>{ind.label}</span>
+              <span className="syne font-bold flex-shrink-0 transition-all duration-300" style={{ fontSize: "clamp(18px,2.2vw,30px)", color: "#f0c93a", opacity: isH ? 1 : 0, transform: isH ? "translateX(0)" : "translateX(-10px)" }}>→</span>
             </a>
-          ))}
-        </div>
-      </section>
+          );
+        })}
+      </div>
 
-      {/* ── WORK ── */}
-      <WorkSection />
+      {/* Mobile */}
+      <div className="w-full max-w-2xl md:hidden flex flex-col gap-8">
+        {industries.map(ind => <MobileIndustryCard key={ind.slug} ind={ind} />)}
+      </div>
 
-      {/* ── PACKAGES ── */}
-      <PackagesSection />
-
-      {/* ── PROCESS ── */}
-      <section id="process" className="px-6 md:px-12 py-24 mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-20 items-end">
-        <div>
-          <div className="section-label mb-14 fade-up">How we work</div>
-          <h2
-            className="syne leading-[1.05] tracking-[-0.03em] mb-5 fade-up"
-            style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
-          >
-            Simple process, no agency jargon
-          </h2>
-          <p className="text-base text-[#6b6b6b] leading-[1.7] mb-10 font-light fade-up">
-            We know you&apos;re busy running an agency, not managing a design project. So we handle everything: one brief, two check-ins, one launch. Most projects are live and generating enquiries within 2–6 weeks.
-          </p>
-          <div className="flex flex-col">
-            {steps.map(({ num, title, body }, i) => (
-              <div
-                key={num}
-                className={`grid gap-5 py-7 border-b border-black/12 first:border-t first:border-black/12 fade-up ${i > 0 ? `fade-up-delay-${i}` : ""}`}
-                style={{ gridTemplateColumns: "60px 1fr" }}
-              >
-                <span className="text-[11px] font-bold tracking-[0.1em] text-[#6b6b6b] pt-0.5">{num}</span>
-                <div>
-                  <div className="font-bold text-base mb-1.5">{title}</div>
-                  <p className="text-sm text-[#6b6b6b] leading-[1.6] font-light">{body}</p>
-                </div>
-              </div>
-            ))}
+      {/* Floating image card */}
+      <div ref={cardRef} className="fixed top-0 left-0 pointer-events-none overflow-hidden hidden md:block"
+        style={{ width: 340, height: 240, opacity: hovered ? 1 : 0, transition: "opacity 0.2s ease", zIndex: 40 }}>
+        {activeImages?.map((src, i) => (
+          <div key={src} className="absolute inset-0" style={{ backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: `${mouse.x * 100}% ${mouse.y * 100}%`, opacity: i === mouseImgIdx ? 1 : 0, transition: "opacity 0.15s ease" }} />
+        ))}
+        {hovered && (
+          <div className="absolute bottom-0 inset-x-0 px-4 py-3 bg-gradient-to-t from-black/60 to-transparent">
+            <span className="syne text-[11px] text-white tracking-[0.14em] uppercase">{industries.find(i => i.slug === hovered)?.label}</span>
           </div>
-        </div>
+        )}
+      </div>
 
-        {/* Visual */}
-        <div
-          className="hidden lg:flex relative h-[500px] items-center justify-center overflow-hidden bg-[#f0ede6] fade-up"
-        >
-          {/* Grid lines */}
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: "linear-gradient(rgba(13,13,13,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(13,13,13,0.12) 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
-            }}
-          />
-          {/* Badge */}
-          <ScrollBadge />
-        </div>
-      </section>
-
-      {/* ── CONTACT / CTA ── */}
-      <HomeContactSection />
-    </>
+    </div>
   );
 }

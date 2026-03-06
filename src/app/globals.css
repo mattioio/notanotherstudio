@@ -18,6 +18,12 @@ html {
 }
 
 body {
+  /* Heading font CSS vars — overridden by FontToggle on mount */
+  --heading-font:     var(--font-syne, 'Syne', sans-serif);
+  --heading-weight:   700;
+  --heading-tracking: -0.04em;
+  --heading-lh:       0.94;
+
   background: var(--nas-white);
   color: var(--nas-black);
   font-family: var(--font-jakarta, 'Plus Jakarta Sans', sans-serif);
@@ -29,8 +35,8 @@ body {
 }
 
 .syne {
-  font-family: var(--font-syne, 'Syne', sans-serif);
-  font-weight: 700;
+  font-family: var(--heading-font, var(--font-syne, 'Syne', sans-serif));
+  font-weight: var(--heading-weight, 700);
 }
 
 /* Section label pattern */

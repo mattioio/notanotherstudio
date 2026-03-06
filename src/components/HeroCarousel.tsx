@@ -2,46 +2,43 @@
 
 import { useState, useEffect } from "react";
 
-const slides = [
-  { src: "/images/banner1.jpeg", alt: "Not Another Studio — project work" },
-  { src: "/images/banner2.jpeg", alt: "Not Another Studio — project work" },
-  { src: "/images/banner3.jpeg", alt: "Not Another Studio — project work" },
-  { src: "/images/banner4.jpeg", alt: "Not Another Studio — project work" },
+interface HeroCarouselProps {
+  images?: string[];
+}
+
+const defaultImages = [
+  "/images/commercial-property/banner1.jpeg",
+  "/images/commercial-property/banner2.jpeg",
+  "/images/commercial-property/banner3.jpeg",
+  "/images/commercial-property/banner4.jpeg",
 ];
 
-export default function HeroCarousel() {
+export default function HeroCarousel({ images = defaultImages }: HeroCarouselProps) {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
     const id = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
+      setCurrent((prev) => (prev + 1) % images.length);
     }, 4000);
     return () => clearInterval(id);
-  }, []);
+  }, [images.length]);
 
   return (
     <div className="absolute inset-0">
-      {slides.map((slide, i) => (
+      {images.map((src, i) => (
         <div
-          key={i}
+          key={src}
           className="absolute inset-0"
-          style={{
-            opacity: i === current ? 1 : 0,
-            transition: "opacity 0.8s ease",
-          }}
+          style={{ opacity: i === current ? 1 : 0, transition: "opacity 0.8s ease" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={slide.src}
-            alt={slide.alt}
-            className="w-full h-full object-cover"
-          />
+          <img src={src} alt="Not Another Studio — project work" className="w-full h-full object-cover" />
         </div>
       ))}
 
       {/* Slide indicators */}
       <div className="absolute bottom-7 right-7 flex items-center gap-3 z-10">
-        {slides.map((_, i) => (
+        {images.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
