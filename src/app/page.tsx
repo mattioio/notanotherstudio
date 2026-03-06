@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, type CSSProperties } from "react";
+import ScrambleText from "@/components/ScrambleText";
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -17,111 +18,331 @@ const industries = [
 ];
 
 const FW: CSSProperties = { width: "100vw", marginLeft: "calc(-50vw + 50%)" };
-const FS = "clamp(44px, 6.5vw, 92px)";
-const DARK_BASE: CSSProperties = { ...FW, background: "#0d0d0d", minHeight: 680, marginTop: "-5rem" };
+const FS_CENTERED = "clamp(36px, 5.2vw, 76px)";
 
-// Heading font CSS vars — set globally by FontToggle, applied here via var()
 const H_STYLE: CSSProperties = {
   fontFamily:    "var(--heading-font)",
   fontWeight:    "var(--heading-weight)" as CSSProperties["fontWeight"],
   letterSpacing: "var(--heading-tracking)",
 };
 
+const HERO_IMGS = [
+  "/images/commercial-property/work-marketplace1.jpeg",
+  "/images/product-design/banner1.jpeg",
+  "/images/food/banner1.jpeg",
+  "/images/commercial-property/banner1.jpeg",
+  "/images/commercial-property/work-jenkins1.jpeg",
+  "/images/commercial-property/work-neill1.jpeg",
+];
+
+// ── Theme #1 (Dark Space) — locked ──────────────────────────────────────────
+const DARK = {
+  bg: "#0d0d0d",
+  text: "white",
+  blurb: "rgba(255,255,255,0.40)",
+  highlight: "#f0c93a",
+  highlightText: "#0d0d0d",
+  vignette: "#0d0d0d",
+  dotColor: "rgba(255,255,255,0.65)",
+  dotActive: "#f0c93a",
+  lineRGB: "255,255,255",
+  lineMaxAlpha: 0.3,
+};
+
 // ════════════════════════════════════════════════════════════════════════════
-// HERO — CONSTELLATION
+// HERO — Centered title + scroll-to-fullscreen image carousel
 // ════════════════════════════════════════════════════════════════════════════
-function HeroConstellation({ textStyle = 1 }: { textStyle?: number }) {
-  const cvRef  = useRef<HTMLCanvasElement>(null);
-  const cntRef = useRef<HTMLDivElement>(null);
-  const mouse  = useRef({ x: -999, y: -999 });
+
+function HeroCentered() {
+  const imgRef = useRef<HTMLDivElement>(null);
+  const mobileImgRef = useRef<HTMLDivElement>(null);
+  const [activeImg, setActiveImg] = useState(0);
+
+  // Autoplay image carousel — 1s per image
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setActiveImg((prev) => (prev + 1) % HERO_IMGS.length);
+    }, 1000);
+    return () => clearInterval(iv);
+  }, []);
 
   useEffect(() => {
-    const canvas = cvRef.current, container = cntRef.current;
-    if (!canvas || !container) return;
-    const ctx = canvas.getContext("2d")!;
-    let W = container.offsetWidth, H = container.offsetHeight;
-    canvas.width = W; canvas.height = H;
+    const el = imgRef.current;
+    if (!el) return;
 
-    const N = 62;
-    const nodes = Array.from({ length: N }, () => ({
-      x: Math.random() * W, y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.45, vy: (Math.random() - 0.5) * 0.45,
-      r: 1.2 + Math.random() * 1.8,
-    }));
+    const onScroll = () => {
+      const rect = el.getBoundingClientRect();
+      const viewH = window.innerHeight;
+      const risen = viewH - rect.top;
+      const raw = risen / (viewH * 0.6);
+      const progress = Math.max(0, Math.min(1, raw));
+      const t = progress * progress * (3 - 2 * progress);
 
-    const LINK = 130;
-    let raf: number;
+      const fadeRaw = Math.min(1, raw / 0.4);
+      const fadeT = fadeRaw * fadeRaw * (3 - 2 * fadeRaw);
+      el.style.opacity = `${fadeT}`;
+      el.style.transform = `translateY(${(1 - fadeT) * 40}px)`;
 
-    const tick = () => {
-      ctx.clearRect(0, 0, W, H);
-      nodes.forEach(n => {
-        const dx = n.x - mouse.current.x, dy = n.y - mouse.current.y;
-        const d = Math.sqrt(dx * dx + dy * dy);
-        if (d < 110 && d > 0) { n.vx += dx / d * 0.6 * (1 - d / 110); n.vy += dy / d * 0.6 * (1 - d / 110); }
-        n.vx *= 0.975; n.vy *= 0.975;
-        const spd = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
-        if (spd > 1.8) { n.vx *= 1.8 / spd; n.vy *= 1.8 / spd; }
-        n.x += n.vx; n.y += n.vy;
-        if (n.x < 0) { n.x = 0; n.vx *= -1; } if (n.x > W) { n.x = W; n.vx *= -1; }
-        if (n.y < 0) { n.y = 0; n.vy *= -1; } if (n.y > H) { n.y = H; n.vy *= -1; }
-      });
-      for (let i = 0; i < N; i++) {
-        for (let j = i + 1; j < N; j++) {
-          const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < LINK) {
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(255,255,255,${(1 - d / LINK) * 0.3})`;
-            ctx.lineWidth = 0.6; ctx.stroke();
-          }
-        }
+      const w = 50 + 50 * t;
+      el.style.width = `${w}vw`;
+      el.style.borderRadius = `${32 * (1 - t)}px`;
+
+      const shadowOpacity = 0.12 * (1 - t);
+      el.style.boxShadow = shadowOpacity > 0.01
+        ? `0 8px 40px rgba(0,0,0,${shadowOpacity})`
+        : "none";
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Mobile: scroll-based fade-in via IntersectionObserver
+  useEffect(() => {
+    const el = mobileImgRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        el.style.opacity = "1";
+        el.style.transform = "translateY(0)";
+        obs.disconnect();
       }
-      nodes.forEach(n => {
-        const dx = n.x - mouse.current.x, dy = n.y - mouse.current.y;
-        const near = Math.sqrt(dx * dx + dy * dy) < 70;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, near ? n.r * 1.8 : n.r, 0, Math.PI * 2);
-        ctx.fillStyle = near ? "#f0c93a" : "rgba(255,255,255,0.65)";
-        ctx.fill();
-      });
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-
-    const onMove = (e: MouseEvent) => {
-      const r = container.getBoundingClientRect();
-      mouse.current = { x: e.clientX - r.left, y: e.clientY - r.top };
-    };
-    const onLeave = () => { mouse.current = { x: -999, y: -999 }; };
-    window.addEventListener("mousemove", onMove);
-    container.addEventListener("mouseleave", onLeave);
-    const onResize = () => { W = container.offsetWidth; H = container.offsetHeight; canvas.width = W; canvas.height = H; };
-    window.addEventListener("resize", onResize);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("resize", onResize);
-      container.removeEventListener("mouseleave", onLeave);
-    };
+    }, { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
 
   const shellW = (): CSSProperties => ({
     position: "absolute", inset: "-0.12em -0.14em",
     overflow: "hidden", pointerEvents: "none",
   });
-
-  const bg = (anim: string, extra?: Partial<CSSProperties>): CSSProperties => ({
+  const bgHL = (anim: string): CSSProperties => ({
     position: "absolute", inset: "7px",
-    background: "#f0c93a",
+    background: DARK.highlight,
     filter: "url(#nas-rough)",
     willChange: "transform",
     animation: anim.replace("forwards", "both"),
-    ...extra,
   });
 
   return (
-    <div ref={cntRef} className="relative overflow-hidden select-none" style={DARK_BASE}>
+    <div style={{ ...FW, marginTop: "-5rem" }}>
+      {/* White text area */}
+      <div style={{
+        background: "#ffffff",
+        minHeight: "78vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "160px 24px 60px",
+      }}>
+        <div style={{ ...H_STYLE, fontSize: FS_CENTERED, lineHeight: "var(--heading-lh)", textAlign: "center" }}>
+          {([["Better", "thinking."], ["Clearer", "design."]] as const).map(([adj, noun], li) => {
+            const adjD  = 0.1 + li * 0.8;
+            const nounD = adjD + 0.4;
+            const hlD   = nounD + 0.05;
+            return (
+              <div key={noun}>
+                <span style={{
+                  color: "#0d0d0d", display: "inline-block", marginRight: "0.28em",
+                  animation: `nas-up 0.5s cubic-bezier(0.22,1,0.36,1) ${adjD}s both`,
+                }}><ScrambleText text={adj} /></span>
+                <span style={{ position: "relative", display: "inline-block", animation: `nas-up 0.5s cubic-bezier(0.22,1,0.36,1) ${nounD}s both` }}>
+                  <span aria-hidden style={shellW()}><span style={bgHL(
+                    `nas-slide 0.55s cubic-bezier(0.22,1,0.36,1) ${hlD}s both`
+                  )} /></span>
+                  <span style={{ position: "relative", zIndex: 1, color: DARK.highlightText }}><ScrambleText text={noun} /></span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <p className="font-light mt-8" style={{
+          fontSize: "clamp(14px, 1.1vw, 17px)",
+          color: "rgba(13,13,13,0.45)",
+          maxWidth: 480, lineHeight: 1.7, letterSpacing: "0.01em",
+          textAlign: "center",
+          animation: "nas-up 0.7s cubic-bezier(0.22,1,0.36,1) 1.8s both",
+        }}>
+          Design is more than visuals. We help organisations understand the problem before solving it.
+        </p>
+      </div>
+
+      {/* Scroll-to-fullscreen image (desktop only) */}
+      <div className="hidden md:flex" style={{
+        background: "#ffffff",
+        justifyContent: "center",
+        paddingBottom: 0,
+      }}>
+        <div
+          ref={imgRef}
+          className="overflow-hidden relative"
+          style={{
+            width: "50vw",
+            aspectRatio: "16 / 9",
+            borderRadius: "32px",
+            boxShadow: "0 8px 40px rgba(0,0,0,0.12)",
+            opacity: 0,
+            transform: "translateY(40px)",
+          }}
+        >
+          {HERO_IMGS.map((src, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={src}
+              src={src}
+              alt="Our work"
+              className="absolute inset-0 w-full h-full object-cover"
+              loading={i === 0 ? "eager" : "lazy"}
+              style={{
+                opacity: activeImg === i ? 1 : 0,
+                transition: "opacity 0.6s ease",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Mobile — simple full-width image */}
+      <div ref={mobileImgRef} className="md:hidden" style={{
+        background: "#ffffff",
+        opacity: 0,
+        transform: "translateY(40px)",
+        transition: "opacity 0.8s ease, transform 0.8s ease",
+      }}>
+        <div className="mx-4 overflow-hidden relative" style={{ borderRadius: 16, aspectRatio: "16/9" }}>
+          {HERO_IMGS.map((src, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={src}
+              src={src}
+              alt="Our work"
+              className="absolute inset-0 w-full h-full object-cover"
+              loading={i === 0 ? "eager" : "lazy"}
+              style={{
+                opacity: activeImg === i ? 1 : 0,
+                transition: "opacity 0.6s ease",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── 3D Industry Carousel (scroll-driven) ─────────────────────────────────────
+
+function IndustryCarousel3D({ ind, images, idx }: { ind: typeof industries[0]; images: string[]; idx: number }) {
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const exitRef = useRef(false);
+  const extraRotRef = useRef(0);
+  const extraSpeedRef = useRef(0);
+
+  const R = 420;
+  const angleStep = 360 / images.length;
+  // Each carousel starts showing face 0 when entering viewport,
+  // with slight stagger so they don't all look identical
+  const startOffset = idx * 15;
+
+  useEffect(() => {
+    const scene = sceneRef.current;
+    const el = carouselRef.current;
+    if (!scene || !el) return;
+    let raf: number;
+
+    const tick = () => {
+      const rect = scene.getBoundingClientRect();
+      const viewH = window.innerHeight;
+      // 0 = scene top at viewport bottom, 1 = scene bottom at viewport top
+      const progress = Math.max(0, Math.min(1, (viewH - rect.top) / (viewH + rect.height)));
+      const baseAngle = startOffset + progress * -180;
+
+      // Fade in as carousel enters viewport (first 20% of progress)
+      const fadeIn = Math.min(1, progress / 0.2);
+      // Fade out as carousel exits viewport (last 15% of progress)
+      const fadeOut = Math.min(1, (1 - progress) / 0.15);
+      scene.style.opacity = `${Math.min(fadeIn, fadeOut)}`;
+
+      if (exitRef.current) {
+        extraSpeedRef.current = Math.min(extraSpeedRef.current + 0.5, 16);
+        extraRotRef.current += extraSpeedRef.current;
+      }
+
+      el.style.transform = `translateZ(${-R}px) rotateY(${baseAngle + extraRotRef.current}deg)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [startOffset]);
+
+  const handleClick = () => {
+    if (exitRef.current) return;
+    exitRef.current = true;
+    setTimeout(() => { window.location.href = `/for/${ind.slug}`; }, 700);
+  };
+
+  return (
+    <div
+      ref={sceneRef}
+      onClick={handleClick}
+      className="cursor-pointer"
+      style={{
+        minHeight: "90vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+      }}
+    >
+      {/* 3D scene — behind text */}
+      <div style={{ perspective: 1000, width: "clamp(220px, 34vw, 440px)", aspectRatio: "2 / 1.5" }}>
+        <div
+          ref={carouselRef}
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "relative",
+            transformStyle: "preserve-3d",
+            transform: `translateZ(${-R}px) rotateY(${startOffset}deg)`,
+          }}
+        >
+          {images.map((src, i) => (
+            <div
+              key={src}
+              className="absolute inset-0"
+              style={{ transform: `rotateY(${i * angleStep}deg) translateZ(${R}px)` }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt={ind.label} className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Title — overlaid on top of carousel */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ zIndex: 2 }}>
+        <span className="syne font-bold block mb-2" style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.14em" }}>
+          {ind.num}
+        </span>
+        <h2 style={{ ...H_STYLE, fontSize: "clamp(36px, 5.5vw, 72px)", color: "#ffffff", lineHeight: 1.1, textShadow: "0 2px 30px rgba(0,0,0,0.6)" }}>
+          <ScrambleText text={ind.label} />
+        </h2>
+      </div>
+    </div>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen flex flex-col items-center px-6 py-20">
+
+      {/* Shared SVG filter + keyframes */}
       <svg width="0" height="0" style={{ position: "absolute" }}>
         <defs>
           <filter id="nas-rough" x="-8%" y="-30%" width="116%" height="160%">
@@ -134,156 +355,22 @@ function HeroConstellation({ textStyle = 1 }: { textStyle?: number }) {
         @keyframes nas-up    { from { opacity:0; transform:translateY(18px) } to { opacity:1; transform:translateY(0) } }
         @keyframes nas-slide { from { transform:translateX(-108%) } to { transform:translateX(0) } }
       `}</style>
-      <canvas ref={cvRef} className="absolute inset-0" style={{ width: "100%", height: "100%" }} />
-      <div className="absolute inset-0 pointer-events-none" style={{
-        zIndex: 5,
-        background: "radial-gradient(ellipse 75% 80% at 50% 50%, transparent 30%, #0d0d0d 80%)",
-      }} />
-      {/* key forces remount + animation replay on font switch */}
-      <div key={textStyle} className="relative flex flex-col items-center justify-center gap-8 px-10" style={{ minHeight: 680, zIndex: 10 }}>
-        <div className="text-center" style={{ ...H_STYLE, fontSize: FS, lineHeight: "var(--heading-lh)" }}>
-          {([["Better", "thinking."], ["Clearer", "design."]] as const).map(([adj, noun], li) => {
-            const adjD = 0.1 + li * 0.44;
-            const hlD  = 0.32 + li * 0.44;
-            return (
-              <div key={noun}>
-                <span style={{
-                  color: "white", display: "inline-block", marginRight: "0.28em",
-                  animation: `nas-up 0.5s cubic-bezier(0.22,1,0.36,1) ${adjD}s both`,
-                }}>{adj}</span>
-                <span style={{ position: "relative", display: "inline-block" }}>
-                  <span aria-hidden style={shellW()}><span style={bg(
-                    `nas-slide 0.55s cubic-bezier(0.22,1,0.36,1) ${hlD}s both`
-                  )} /></span>
-                  <span style={{ position: "relative", zIndex: 1, color: "#0d0d0d" }}>{noun}</span>
-                </span>
-              </div>
-            );
-          })}
+
+      {/* Hero — Mode 3 */}
+      <div className="relative z-10 w-full max-w-3xl">
+        <HeroCentered />
+      </div>
+
+      {/* 3D Industry Carousels — vertically stacked, scroll-driven */}
+      <div className="relative z-10 w-full" style={{ ...FW, background: "#0d0d0d" }}>
+        <div style={{ padding: "clamp(80px, 12vw, 160px) 24px 0" }}>
+          <h2 className="text-center" style={{ ...H_STYLE, fontSize: "clamp(32px, 4.5vw, 60px)", color: "#ffffff", lineHeight: 1.1 }}>
+            We specialise in
+          </h2>
         </div>
-        <p className="syne text-center" style={{
-          fontSize: "clamp(13px, 1.1vw, 16px)",
-          color: "rgba(255,255,255,0.45)",
-          maxWidth: 420,
-          lineHeight: 1.65,
-          letterSpacing: "0.01em",
-          animation: "nas-up 0.7s cubic-bezier(0.22,1,0.36,1) 0.9s both",
-        }}>
-          Design is more than visuals. We help organisations understand the problem before solving it.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// ── Mobile card ───────────────────────────────────────────────────────────────
-
-function MobileIndustryCard({ ind }: { ind: typeof industries[0] }) {
-  const images = industryImages[ind.slug];
-  const [imgIdx, setImgIdx] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setImgIdx(p => (p + 1) % images.length), 3000);
-    return () => clearInterval(id);
-  }, [images.length]);
-  return (
-    <a href={`/for/${ind.slug}`} className="block no-underline group">
-      <div className="relative w-full overflow-hidden" style={{ height: "56vw", maxHeight: 280 }}>
-        {images.map((src, i) => (
-          <div key={src} className="absolute inset-0" style={{ backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center", opacity: i === imgIdx ? 1 : 0, transition: "opacity 0.7s ease" }} />
+        {industries.map((ind, idx) => (
+          <IndustryCarousel3D key={ind.slug} ind={ind} images={industryImages[ind.slug]} idx={idx} />
         ))}
-        <div className="absolute bottom-3 left-4 flex gap-1.5">
-          {images.map((_, i) => <div key={i} className="rounded-full transition-all duration-300" style={{ width: i === imgIdx ? 20 : 6, height: 6, backgroundColor: i === imgIdx ? "#f0c93a" : "rgba(255,255,255,0.5)" }} />)}
-        </div>
-      </div>
-      <div className="flex items-baseline gap-4 py-5 border-b border-black/10">
-        <span className="syne font-bold text-[#cccccc] flex-shrink-0" style={{ fontSize: 13 }}>{ind.num}</span>
-        <span className="leading-none flex-1" style={{ ...H_STYLE, fontSize: "clamp(24px,6vw,36px)", color: "#0d0d0d" }}>{ind.label}</span>
-        <span className="syne font-bold text-[#f0c93a] flex-shrink-0 transition-transform duration-300 group-hover:translate-x-1" style={{ fontSize: 22 }}>→</span>
-      </div>
-    </a>
-  );
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
-
-export default function HomePage() {
-  const [hovered,   setHovered]   = useState<string | null>(null);
-  const [mouse,     setMouse]     = useState({ x: 0.5, y: 0.5 });
-  const [textStyle, setTextStyle] = useState(1);
-  const smoothRef = useRef({ x: 0.5, y: 0.5 });
-  const rafRef    = useRef<number | null>(null);
-  const cardRef   = useRef<HTMLDivElement | null>(null);
-
-  // Sync textStyle with FontToggle (for hero animation replay via key)
-  useEffect(() => {
-    const saved = parseInt(localStorage.getItem("nas-font") ?? "1", 10);
-    if (saved !== 1) setTextStyle(saved);
-    const handler = (e: Event) => setTextStyle((e as CustomEvent<number>).detail);
-    window.addEventListener("fontchange", handler);
-    return () => window.removeEventListener("fontchange", handler);
-  }, []);
-
-  const mouseImgIdx  = Math.min(3, Math.floor(mouse.x * 4));
-  const activeImages = hovered ? industryImages[hovered] : null;
-  const anyHovered   = hovered !== null;
-
-  useEffect(() => {
-    const animate = () => {
-      smoothRef.current.x += (mouse.x - smoothRef.current.x) * 0.1;
-      smoothRef.current.y += (mouse.y - smoothRef.current.y) * 0.1;
-      if (cardRef.current) {
-        cardRef.current.style.transform = `translate(${smoothRef.current.x * window.innerWidth + 60}px,${smoothRef.current.y * window.innerHeight - 120}px)`;
-      }
-      rafRef.current = requestAnimationFrame(animate);
-    };
-    rafRef.current = requestAnimationFrame(animate);
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [mouse]);
-
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-20"
-      onMouseMove={e => setMouse({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight })}>
-
-      <div className="relative z-10 w-full max-w-3xl mb-16 md:mb-20">
-        <HeroConstellation textStyle={textStyle} />
-      </div>
-
-      {/* Desktop industry list */}
-      <div className="relative z-10 w-full max-w-2xl hidden md:block">
-        <p className="syne font-bold tracking-[0.14em] uppercase mb-5" style={{ fontSize: 11, color: "#aaaaaa" }}>
-          Pick your industry
-        </p>
-        {industries.map(ind => {
-          const isH = hovered === ind.slug;
-          return (
-            <a key={ind.slug} href={`/for/${ind.slug}`}
-              onMouseEnter={() => setHovered(ind.slug)} onMouseLeave={() => setHovered(null)}
-              className="group flex items-baseline gap-10 py-5 border-b border-black/10 no-underline transition-all duration-200"
-              style={{ opacity: anyHovered && !isH ? 0.22 : 1 }}>
-              <span className="syne font-bold flex-shrink-0 leading-none transition-colors duration-200" style={{ fontSize: "clamp(12px,1.4vw,17px)", color: isH ? "#f0c93a" : "#cccccc", minWidth: "2.2rem" }}>{ind.num}</span>
-              <span className="leading-none flex-1" style={{ ...H_STYLE, fontSize: "clamp(26px,3.8vw,50px)", color: "#0d0d0d" }}>{ind.label}</span>
-              <span className="syne font-bold flex-shrink-0 transition-all duration-300" style={{ fontSize: "clamp(18px,2.2vw,30px)", color: "#f0c93a", opacity: isH ? 1 : 0, transform: isH ? "translateX(0)" : "translateX(-10px)" }}>→</span>
-            </a>
-          );
-        })}
-      </div>
-
-      {/* Mobile */}
-      <div className="w-full max-w-2xl md:hidden flex flex-col gap-8">
-        {industries.map(ind => <MobileIndustryCard key={ind.slug} ind={ind} />)}
-      </div>
-
-      {/* Floating image card */}
-      <div ref={cardRef} className="fixed top-0 left-0 pointer-events-none overflow-hidden hidden md:block"
-        style={{ width: 340, height: 240, opacity: hovered ? 1 : 0, transition: "opacity 0.2s ease", zIndex: 40 }}>
-        {activeImages?.map((src, i) => (
-          <div key={src} className="absolute inset-0" style={{ backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: `${mouse.x * 100}% ${mouse.y * 100}%`, opacity: i === mouseImgIdx ? 1 : 0, transition: "opacity 0.15s ease" }} />
-        ))}
-        {hovered && (
-          <div className="absolute bottom-0 inset-x-0 px-4 py-3 bg-gradient-to-t from-black/60 to-transparent">
-            <span className="syne text-[11px] text-white tracking-[0.14em] uppercase">{industries.find(i => i.slug === hovered)?.label}</span>
-          </div>
-        )}
       </div>
 
     </div>

@@ -25,10 +25,10 @@ export function applyFont(n: number) {
 }
 
 export default function FontToggle() {
-  const [active, setActive] = useState(1);
+  const [active, setActive] = useState(4);
 
   useEffect(() => {
-    const saved = parseInt(localStorage.getItem("nas-font") ?? "1", 10);
+    const saved = parseInt(localStorage.getItem("nas-font") ?? "4", 10);
     setActive(saved);
     applyFont(saved);
   }, []);

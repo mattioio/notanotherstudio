@@ -18,7 +18,7 @@ html {
 }
 
 body {
-  /* Heading font CSS vars — overridden by FontToggle on mount */
+  /* Heading font — locked to Syne */
   --heading-font:     var(--font-syne, 'Syne', sans-serif);
   --heading-weight:   700;
   --heading-tracking: -0.04em;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export type Project = {
   num: string;
@@ -16,35 +16,35 @@ const commercialProjects: Project[] = [
     client: "Jenkins Law",
     location: "London",
     services: ["Web", "Print"],
-    images: ["/images/work-jenkins1.jpeg", "/images/work-jenkins2.jpeg"],
+    images: ["/images/commercial-property/work-jenkins1.jpeg", "/images/commercial-property/work-jenkins2.jpeg"],
   },
   {
     num: "02",
     client: "Neill Mylroie Real Estate",
     location: "Manchester",
     services: ["Web", "Brand"],
-    images: ["/images/work-neill1.jpeg", "/images/work-neill2.jpeg"],
+    images: ["/images/commercial-property/work-neill1.jpeg", "/images/commercial-property/work-neill2.jpeg"],
   },
   {
     num: "03",
     client: "Market Place Hounslow",
     location: "London",
     services: ["Brand", "Web", "Print"],
-    images: ["/images/work-marketplace1.jpeg", "/images/work-marketplace2.jpeg"],
+    images: ["/images/commercial-property/work-marketplace1.jpeg", "/images/commercial-property/work-marketplace2.jpeg"],
   },
   {
     num: "04",
     client: "Kingsland Dalston",
     location: "London",
     services: ["Web", "Brand"],
-    images: ["/images/work-kingsland1.jpeg", "/images/work-kingsland2.jpeg"],
+    images: ["/images/commercial-property/work-marketplace1.jpeg", "/images/commercial-property/work-marketplace2.jpeg"],
   },
   {
     num: "05",
     client: "Your project here",
     location: "We have space for one new client",
     services: [],
-    images: ["/images/work-yourproject.jpeg"],
+    images: ["/images/commercial-property/work-yourproject.jpeg"],
   },
 ];
 
@@ -78,6 +78,9 @@ interface WorkSectionProps {
 export default function WorkSection({ projects = commercialProjects }: WorkSectionProps) {
   const [active, setActive] = useState(0);
   const [carouselIdx, setCarouselIdx] = useState(0);
+  const windowRef = useRef<HTMLDivElement>(null);
+  const mouseNorm = useRef({ x: 0.5, y: 0.5 });
+  const smooth = useRef({ x: 0.5, y: 0.5 });
 
   useEffect(() => {
     const imgs = projects[active].images;
@@ -87,6 +90,34 @@ export default function WorkSection({ projects = commercialProjects }: WorkSecti
     }, 3500);
     return () => clearInterval(id);
   }, [active, projects]);
+
+  // Window parallax effect for desktop image panel
+  useEffect(() => {
+    let raf: number;
+    const tick = () => {
+      smooth.current.x += (mouseNorm.current.x - smooth.current.x) * 0.04;
+      smooth.current.y += (mouseNorm.current.y - smooth.current.y) * 0.04;
+      const mx = smooth.current.x - 0.5;
+      const my = smooth.current.y - 0.5;
+      if (windowRef.current) {
+        windowRef.current.style.transform = `translate(${mx * -24}px, ${my * -18}px)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    const onMove = (e: MouseEvent) => {
+      mouseNorm.current = {
+        x: e.clientX / window.innerWidth,
+        y: e.clientY / window.innerHeight,
+      };
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("mousemove", onMove);
+    };
+  }, []);
 
   const handleMouseEnter = (i: number) => {
     if (i !== active) {
@@ -252,23 +283,35 @@ export default function WorkSection({ projects = commercialProjects }: WorkSecti
           className="hidden lg:block lg:w-[52%] sticky top-[72px]"
           style={{ height: "calc(100vh - 72px)" }}
         >
-          <div className="relative w-full h-full">
-            {/* All project images stacked — active one visible */}
-            {projects.map(({ client, images }, i) =>
-              images.map((src, idx) => (
-                <div
-                  key={`${i}-${idx}`}
-                  className="absolute inset-0"
-                  style={{
-                    opacity: active === i && carouselIdx === idx ? 1 : 0,
-                    transition: "opacity 0.7s ease",
-                  }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt={client} className="w-full h-full object-cover" />
-                </div>
-              ))
-            )}
+          <div className="relative w-full h-full overflow-hidden">
+            {/* Oversized inner container for Window panning */}
+            <div
+              ref={windowRef}
+              className="absolute"
+              style={{
+                inset: "-7.5%",
+                width: "115%",
+                height: "115%",
+                willChange: "transform",
+              }}
+            >
+              {/* All project images stacked — active one visible */}
+              {projects.map(({ client, images }, i) =>
+                images.map((src, idx) => (
+                  <div
+                    key={`${i}-${idx}`}
+                    className="absolute inset-0"
+                    style={{
+                      opacity: active === i && carouselIdx === idx ? 1 : 0,
+                      transition: "opacity 0.7s ease",
+                    }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={src} alt={client} className="w-full h-full object-cover" />
+                  </div>
+                ))
+              )}
+            </div>
 
             {/* Carousel indicators — only when active project has multiple images */}
             {projects[active].images.length > 1 && (

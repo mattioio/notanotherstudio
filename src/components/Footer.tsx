@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import ScrambleText from "@/components/ScrambleText";
 
 // ── Compass needle canvas (footer background) ─────────────────────────────
 function FooterCompass() {
@@ -212,8 +213,8 @@ function HomeFooter() {
               letterSpacing: "var(--heading-tracking)",
             }}
           >
-            Stop settling for{" "}
-            <span className="text-[#f0c93a]">good enough.</span>
+            <ScrambleText text="Stop settling for " />
+            <span className="text-[#f0c93a]"><ScrambleText text="good enough." /></span>
           </h2>
           <p className="text-white/50 text-base font-light leading-[1.7]">
             Tell us about your project and we&apos;ll come back to you within one working day.
