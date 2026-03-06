@@ -1,253 +1,378 @@
-import type { Metadata } from "next";
-import ScrollAnimations from "@/components/ScrollAnimations";
-import PackagesSection from "@/components/PackagesSection";
-import HomeContactSection from "@/components/HomeContactSection";
-import HeroCarousel from "@/components/HeroCarousel";
-import WorkSection from "@/components/WorkSection";
-import ScrollBadge from "@/components/ScrollBadge";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Not Another Studio | Web, Print & Brand for Commercial Letting Agencies",
+import { useState, useEffect, useRef, type CSSProperties } from "react";
+import ScrambleText from "@/components/ScrambleText";
+
+// ── Data ─────────────────────────────────────────────────────────────────────
+
+const industryImages: Record<string, string[]> = {
+  "product-design":        ["/images/product-design/banner1.jpeg", "/images/product-design/banner2.jpeg", "/images/product-design/banner3.jpeg", "/images/product-design/banner4.jpeg"],
+  "commercial-properties": ["/images/commercial-property/banner1.jpeg", "/images/commercial-property/banner2.jpeg", "/images/commercial-property/banner3.jpeg", "/images/commercial-property/banner4.jpeg"],
+  "food":                  ["/images/food/banner1.jpeg", "/images/food/banner2.jpeg", "/images/food/banner3.jpeg", "/images/food/banner4.jpeg"],
 };
 
-const marqueeItems = [
-  "Web Packages", "Letting Agency Sites", "Property CMS", "Letting Brochures",
-  "Business Cards", "Brand Identity", "Brand Refresh", "Commercial Lettings",
-  "Web Packages", "Letting Agency Sites", "Property CMS", "Letting Brochures",
-  "Business Cards", "Brand Identity", "Brand Refresh", "Commercial Lettings",
+const industries = [
+  { num: "01", label: "Product Design",      slug: "product-design"        },
+  { num: "02", label: "Commercial Property", slug: "commercial-properties" },
+  { num: "03", label: "Food & Hospitality",  slug: "food"                  },
 ];
 
-const services = [
-  {
-    slug: "web",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
-        <rect x="2" y="3" width="20" height="14" rx="0" /><path d="M8 21h8M12 17v4" />
-      </svg>
-    ),
-    name: "Web Packages",
-    desc: "Your website is the first thing a landlord checks before calling you. We build sites that make commercial letting agencies look credible, professional, and worth instructing, with a property CMS your team can run without a developer.",
-    from: "£1,000+",
-    features: ["Marketing site with property CMS", "Mobile-first, SEO-optimised build", "Tenant enquiry forms & lead capture", "Ongoing support & hosting add-on"],
-  },
-  {
-    slug: "print",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
-        <path d="M14 2H4v20h16V8z" fill="none" /><polyline points="14 2 14 8 20 8" fill="none" /><line x1="7" y1="13" x2="17" y2="13" /><line x1="7" y1="17" x2="17" y2="17" />
-      </svg>
-    ),
-    name: "Print Packages",
-    desc: "When you're sitting in front of a landlord or walking a prospective tenant round a space, your print materials are doing the selling. We design brochures and packs that reflect the quality of your service, not a Word template from 2015.",
-    from: "£300+",
-    features: ["Letting brochures & floor plan layouts", "Investor & development presentations", "Business card & stationery design", "Print-ready PDF + editable source files"],
-  },
-  {
-    slug: "brand",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-      </svg>
-    ),
-    name: "Brand Packages",
-    desc: "Landlords choose agents they trust. A strong, consistent brand builds that trust before you've even picked up the phone. We give commercial letting agencies the visual identity to stand out in a crowded market and keep clients coming back.",
-    from: "£1,000+",
-    features: ["Logo design & visual identity", "Colour, type & brand guidelines", "Social media & digital asset kit", "Full rebrand & refresh options"],
-  },
+const FW: CSSProperties = { width: "100vw", marginLeft: "calc(-50vw + 50%)" };
+const FS_CENTERED = "clamp(36px, 5.2vw, 76px)";
+
+const H_STYLE: CSSProperties = {
+  fontFamily:    "var(--heading-font)",
+  fontWeight:    "var(--heading-weight)" as CSSProperties["fontWeight"],
+  letterSpacing: "var(--heading-tracking)",
+};
+
+const HERO_IMGS = [
+  "/images/commercial-property/work-marketplace1.jpeg",
+  "/images/product-design/banner1.jpeg",
+  "/images/food/banner1.jpeg",
+  "/images/commercial-property/banner1.jpeg",
+  "/images/commercial-property/work-jenkins1.jpeg",
+  "/images/commercial-property/work-neill1.jpeg",
 ];
 
+// ── Theme #1 (Dark Space) — locked ──────────────────────────────────────────
+const DARK = {
+  bg: "#0d0d0d",
+  text: "white",
+  blurb: "rgba(255,255,255,0.40)",
+  highlight: "#f0c93a",
+  highlightText: "#0d0d0d",
+  vignette: "#0d0d0d",
+  dotColor: "rgba(255,255,255,0.65)",
+  dotActive: "#f0c93a",
+  lineRGB: "255,255,255",
+  lineMaxAlpha: 0.3,
+};
 
-const steps = [
-  {
-    num: "01",
-    title: "Discovery Call",
-    body: "We learn about your agency, your clients, and your goals. Usually 30 minutes. No prep required.",
-  },
-  {
-    num: "02",
-    title: "Proposal & Quote",
-    body: "You receive a clear scope, fixed price, and timeline. No surprises, no scope creep.",
-  },
-  {
-    num: "03",
-    title: "Design & Build",
-    body: "We handle everything. You review and give feedback at two structured checkpoints. Nothing more.",
-  },
-  {
-    num: "04",
-    title: "Launch & Handover",
-    body: "We go live, train your team on any CMS, and hand over all files so you're completely self-sufficient from day one.",
-  },
-];
+// ════════════════════════════════════════════════════════════════════════════
+// HERO — Centered title + scroll-to-fullscreen image carousel
+// ════════════════════════════════════════════════════════════════════════════
 
-export default function HomePage() {
+function HeroCentered() {
+  const imgRef = useRef<HTMLDivElement>(null);
+  const mobileImgRef = useRef<HTMLDivElement>(null);
+  const [activeImg, setActiveImg] = useState(0);
+
+  // Autoplay image carousel — 1s per image
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setActiveImg((prev) => (prev + 1) % HERO_IMGS.length);
+    }, 1000);
+    return () => clearInterval(iv);
+  }, []);
+
+  useEffect(() => {
+    const el = imgRef.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      const rect = el.getBoundingClientRect();
+      const viewH = window.innerHeight;
+      const risen = viewH - rect.top;
+      const raw = risen / (viewH * 0.6);
+      const progress = Math.max(0, Math.min(1, raw));
+      const t = progress * progress * (3 - 2 * progress);
+
+      const fadeRaw = Math.min(1, raw / 0.4);
+      const fadeT = fadeRaw * fadeRaw * (3 - 2 * fadeRaw);
+      el.style.opacity = `${fadeT}`;
+      el.style.transform = `translateY(${(1 - fadeT) * 40}px)`;
+
+      const w = 50 + 50 * t;
+      el.style.width = `${w}vw`;
+      el.style.borderRadius = `${32 * (1 - t)}px`;
+
+      const shadowOpacity = 0.12 * (1 - t);
+      el.style.boxShadow = shadowOpacity > 0.01
+        ? `0 8px 40px rgba(0,0,0,${shadowOpacity})`
+        : "none";
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Mobile: scroll-based fade-in via IntersectionObserver
+  useEffect(() => {
+    const el = mobileImgRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        el.style.opacity = "1";
+        el.style.transform = "translateY(0)";
+        obs.disconnect();
+      }
+    }, { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const shellW = (): CSSProperties => ({
+    position: "absolute", inset: "-0.12em -0.14em",
+    overflow: "hidden", pointerEvents: "none",
+  });
+  const bgHL = (anim: string): CSSProperties => ({
+    position: "absolute", inset: "7px",
+    background: DARK.highlight,
+    filter: "url(#nas-rough)",
+    willChange: "transform",
+    animation: anim.replace("forwards", "both"),
+  });
+
   return (
-    <>
-      <ScrollAnimations />
-
-      {/* ── HERO ── */}
-      <section
-        id="home"
-        className="relative pt-[72px] min-h-screen flex flex-col-reverse lg:flex-row"
-      >
-        {/* Left — text */}
-        <div className="relative z-10 flex items-center px-6 md:px-12 py-12 lg:py-0 lg:w-[38%] flex-shrink-0">
-          <div className="max-w-[480px]">
-            <div className="eyebrow fade-up visible mb-6">For Commercial Letting Agencies</div>
-            <h1
-              className="syne leading-[1.0] tracking-[-0.03em] mb-7 fade-up visible fade-up-delay-1"
-              style={{ fontSize: "clamp(44px, 6vw, 76px)" }}
-            >
-              The agency behind your agency
-            </h1>
-            <p className="text-[17px] text-[#6b6b6b] font-light leading-[1.6] max-w-[400px] mb-11 fade-up visible fade-up-delay-2">
-              Your website, brand, and print materials should do the selling before you&apos;ve even picked up the phone. We build them to win instructions, not just look the part.
-            </p>
-            <div className="flex flex-wrap items-center gap-7 fade-up visible fade-up-delay-3">
-              <a
-                href="/#packages"
-                className="inline-block px-8 py-4 bg-[#0d0d0d] text-[#f5f3ef] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] hover:-translate-y-0.5 transition-all"
-              >
-                View Packages
-              </a>
-              <a
-                href="/#work"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0d0d0d] no-underline border-b border-[#0d0d0d] pb-0.5 hover:text-[#6b6b6b] hover:border-[#6b6b6b] transition-colors"
-              >
-                See our work →
-              </a>
-            </div>
-          </div>
+    <div style={{ ...FW, marginTop: "-5rem" }}>
+      {/* White text area */}
+      <div style={{
+        background: "#ffffff",
+        minHeight: "78vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "160px 24px 60px",
+      }}>
+        <div style={{ ...H_STYLE, fontSize: FS_CENTERED, lineHeight: "var(--heading-lh)", textAlign: "center" }}>
+          {([["Better", "thinking."], ["Clearer", "design."]] as const).map(([adj, noun], li) => {
+            const adjD  = 0.1 + li * 0.8;
+            const nounD = adjD + 0.4;
+            const hlD   = nounD + 0.05;
+            return (
+              <div key={noun}>
+                <span style={{
+                  color: "#0d0d0d", display: "inline-block", marginRight: "0.28em",
+                  animation: `nas-up 0.5s cubic-bezier(0.22,1,0.36,1) ${adjD}s both`,
+                }}><ScrambleText text={adj} /></span>
+                <span style={{ position: "relative", display: "inline-block", animation: `nas-up 0.5s cubic-bezier(0.22,1,0.36,1) ${nounD}s both` }}>
+                  <span aria-hidden style={shellW()}><span style={bgHL(
+                    `nas-slide 0.55s cubic-bezier(0.22,1,0.36,1) ${hlD}s both`
+                  )} /></span>
+                  <span style={{ position: "relative", zIndex: 1, color: DARK.highlightText }}><ScrambleText text={noun} /></span>
+                </span>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Right — full-bleed carousel, 62% of width */}
+        <p className="font-light mt-8" style={{
+          fontSize: "clamp(14px, 1.1vw, 17px)",
+          color: "rgba(13,13,13,0.45)",
+          maxWidth: 480, lineHeight: 1.7, letterSpacing: "0.01em",
+          textAlign: "center",
+          animation: "nas-up 0.7s cubic-bezier(0.22,1,0.36,1) 1.8s both",
+        }}>
+          Design is more than visuals. We help organisations understand the problem before solving it.
+        </p>
+      </div>
+
+      {/* Scroll-to-fullscreen image (desktop only) */}
+      <div className="hidden md:flex" style={{
+        background: "#ffffff",
+        justifyContent: "center",
+        paddingBottom: 0,
+      }}>
         <div
-          className="relative flex-1 overflow-hidden"
+          ref={imgRef}
+          className="overflow-hidden relative"
           style={{
-            height: 'clamp(60vh, 75vh, 100vh)',
-            minHeight: '75vh',
+            width: "50vw",
+            aspectRatio: "16 / 9",
+            borderRadius: "32px",
+            boxShadow: "0 8px 40px rgba(0,0,0,0.12)",
+            opacity: 0,
+            transform: "translateY(40px)",
           }}
         >
-          <HeroCarousel />
-        </div>
-      </section>
-
-      {/* ── MARQUEE ── */}
-      <div className="bg-[#0d0d0d] text-white py-4 overflow-hidden whitespace-nowrap">
-        <div className="inline-flex marquee-animate">
-          {marqueeItems.map((item, i) => (
-            <span
-              key={i}
-              className="inline-flex items-center gap-6 px-8 text-[12px] font-bold tracking-[0.12em] uppercase after:content-['✦'] after:text-[#f0c93a] after:text-[10px]"
-            >
-              {item}
-            </span>
+          {HERO_IMGS.map((src, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={src}
+              src={src}
+              alt="Our work"
+              className="absolute inset-0 w-full h-full object-cover"
+              loading={i === 0 ? "eager" : "lazy"}
+              style={{
+                opacity: activeImg === i ? 1 : 0,
+                transition: "opacity 0.6s ease",
+              }}
+            />
           ))}
         </div>
       </div>
 
-      {/* ── SERVICES ── */}
-      <section id="services" className="px-6 md:px-12 py-24">
-        <div className="section-label mb-14 fade-up">What we do</div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[2px]">
-          {services.map(({ slug, icon, name, desc, from, features }, i) => (
-            <a
-              key={slug}
-              href={`/#packages`}
-              className={`group block bg-[#f0ede6] hover:bg-[#0d0d0d] p-12 no-underline text-[#0d0d0d] hover:text-white transition-colors duration-300 cursor-pointer fade-up ${i === 1 ? "fade-up-delay-1" : i === 2 ? "fade-up-delay-2" : ""}`}
-            >
-              {/* Icon */}
-              <div className="w-11 h-11 bg-[#0d0d0d] group-hover:bg-[#f0c93a] text-white group-hover:text-[#0d0d0d] flex items-center justify-center mb-7 transition-colors duration-300">
-                {icon}
-              </div>
-              {/* Name */}
-              <div className="syne text-[22px] tracking-[-0.02em] mb-4">{name}</div>
-              {/* Desc */}
-              <p className="text-sm text-[#6b6b6b] group-hover:text-white/60 leading-[1.7] mb-7 font-light transition-colors duration-300">
-                {desc}
-              </p>
-              {/* Price */}
-              <div className="mb-7 pb-6 border-b border-black/12 group-hover:border-white/12 transition-colors duration-300">
-                <div className="text-[11px] font-semibold tracking-[0.1em] uppercase text-[#6b6b6b] group-hover:text-white/50 transition-colors duration-300">
-                  Starting from
-                </div>
-                <div className="syne text-[32px] tracking-[-0.03em]">{from}</div>
-              </div>
-              {/* Features */}
-              <ul className="list-none p-0 m-0 mb-8">
-                {features.map((f) => (
-                  <li
-                    key={f}
-                    className="flex items-center gap-2.5 text-[13px] py-2 border-b border-black/12 group-hover:border-white/8 transition-colors duration-300 font-normal"
-                  >
-                    <span className="opacity-50 text-xs">→</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <span className="inline-flex items-center gap-2 text-[13px] font-bold tracking-[0.05em] uppercase border-b border-current pb-[3px]">
-                View packages →
-              </span>
-            </a>
+      {/* Mobile — simple full-width image */}
+      <div ref={mobileImgRef} className="md:hidden" style={{
+        background: "#ffffff",
+        opacity: 0,
+        transform: "translateY(40px)",
+        transition: "opacity 0.8s ease, transform 0.8s ease",
+      }}>
+        <div className="mx-4 overflow-hidden relative" style={{ borderRadius: 16, aspectRatio: "16/9" }}>
+          {HERO_IMGS.map((src, i) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={src}
+              src={src}
+              alt="Our work"
+              className="absolute inset-0 w-full h-full object-cover"
+              loading={i === 0 ? "eager" : "lazy"}
+              style={{
+                opacity: activeImg === i ? 1 : 0,
+                transition: "opacity 0.6s ease",
+              }}
+            />
           ))}
         </div>
-      </section>
+      </div>
+    </div>
+  );
+}
 
-      {/* ── WORK ── */}
-      <WorkSection />
+// ── 3D Industry Carousel (scroll-driven) ─────────────────────────────────────
 
-      {/* ── PACKAGES ── */}
-      <PackagesSection />
+function IndustryCarousel3D({ ind, images, idx }: { ind: typeof industries[0]; images: string[]; idx: number }) {
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const exitRef = useRef(false);
+  const extraRotRef = useRef(0);
+  const extraSpeedRef = useRef(0);
 
-      {/* ── PROCESS ── */}
-      <section id="process" className="px-6 md:px-12 py-24 grid grid-cols-1 lg:grid-cols-2 gap-20 items-end">
-        <div>
-          <div className="section-label mb-14 fade-up">How we work</div>
-          <h2
-            className="syne leading-[1.05] tracking-[-0.03em] mb-5 fade-up"
-            style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
-          >
-            Simple process, no agency jargon
-          </h2>
-          <p className="text-base text-[#6b6b6b] leading-[1.7] mb-10 font-light fade-up">
-            We know you&apos;re busy running an agency, not managing a design project. So we handle everything: one brief, two check-ins, one launch. Most projects are live and generating enquiries within 2–6 weeks.
-          </p>
-          <div className="flex flex-col">
-            {steps.map(({ num, title, body }, i) => (
-              <div
-                key={num}
-                className={`grid gap-5 py-7 border-b border-black/12 first:border-t first:border-black/12 fade-up ${i > 0 ? `fade-up-delay-${i}` : ""}`}
-                style={{ gridTemplateColumns: "60px 1fr" }}
-              >
-                <span className="text-[11px] font-bold tracking-[0.1em] text-[#6b6b6b] pt-0.5">{num}</span>
-                <div>
-                  <div className="font-bold text-base mb-1.5">{title}</div>
-                  <p className="text-sm text-[#6b6b6b] leading-[1.6] font-light">{body}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+  const R = 420;
+  const angleStep = 360 / images.length;
+  // Each carousel starts showing face 0 when entering viewport,
+  // with slight stagger so they don't all look identical
+  const startOffset = idx * 15;
 
-        {/* Visual */}
+  useEffect(() => {
+    const scene = sceneRef.current;
+    const el = carouselRef.current;
+    if (!scene || !el) return;
+    let raf: number;
+
+    const tick = () => {
+      const rect = scene.getBoundingClientRect();
+      const viewH = window.innerHeight;
+      // 0 = scene top at viewport bottom, 1 = scene bottom at viewport top
+      const progress = Math.max(0, Math.min(1, (viewH - rect.top) / (viewH + rect.height)));
+      const baseAngle = startOffset + progress * -180;
+
+      // Fade in as carousel enters viewport (first 20% of progress)
+      const fadeIn = Math.min(1, progress / 0.2);
+      // Fade out as carousel exits viewport (last 15% of progress)
+      const fadeOut = Math.min(1, (1 - progress) / 0.15);
+      scene.style.opacity = `${Math.min(fadeIn, fadeOut)}`;
+
+      if (exitRef.current) {
+        extraSpeedRef.current = Math.min(extraSpeedRef.current + 0.5, 16);
+        extraRotRef.current += extraSpeedRef.current;
+      }
+
+      el.style.transform = `translateZ(${-R}px) rotateY(${baseAngle + extraRotRef.current}deg)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [startOffset]);
+
+  const handleClick = () => {
+    if (exitRef.current) return;
+    exitRef.current = true;
+    setTimeout(() => { window.location.href = `/for/${ind.slug}`; }, 700);
+  };
+
+  return (
+    <div
+      ref={sceneRef}
+      onClick={handleClick}
+      className="cursor-pointer"
+      style={{
+        minHeight: "90vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+      }}
+    >
+      {/* 3D scene — behind text */}
+      <div style={{ perspective: 1000, width: "clamp(220px, 34vw, 440px)", aspectRatio: "2 / 1.5" }}>
         <div
-          className="hidden lg:flex relative h-[500px] items-center justify-center overflow-hidden bg-[#f0ede6] fade-up"
+          ref={carouselRef}
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "relative",
+            transformStyle: "preserve-3d",
+            transform: `translateZ(${-R}px) rotateY(${startOffset}deg)`,
+          }}
         >
-          {/* Grid lines */}
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: "linear-gradient(rgba(13,13,13,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(13,13,13,0.12) 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
-            }}
-          />
-          {/* Badge */}
-          <ScrollBadge />
+          {images.map((src, i) => (
+            <div
+              key={src}
+              className="absolute inset-0"
+              style={{ transform: `rotateY(${i * angleStep}deg) translateZ(${R}px)` }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt={ind.label} className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
 
-      {/* ── CONTACT / CTA ── */}
-      <HomeContactSection />
-    </>
+      {/* Title — overlaid on top of carousel */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ zIndex: 2 }}>
+        <span className="syne font-bold block mb-2" style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.14em" }}>
+          {ind.num}
+        </span>
+        <h2 style={{ ...H_STYLE, fontSize: "clamp(36px, 5.5vw, 72px)", color: "#ffffff", lineHeight: 1.1, textShadow: "0 2px 30px rgba(0,0,0,0.6)" }}>
+          <ScrambleText text={ind.label} />
+        </h2>
+      </div>
+    </div>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen flex flex-col items-center px-6 py-20">
+
+      {/* Shared SVG filter + keyframes */}
+      <svg width="0" height="0" style={{ position: "absolute" }}>
+        <defs>
+          <filter id="nas-rough" x="-8%" y="-30%" width="116%" height="160%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="8" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+      </svg>
+      <style>{`
+        @keyframes nas-up    { from { opacity:0; transform:translateY(18px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes nas-slide { from { transform:translateX(-108%) } to { transform:translateX(0) } }
+      `}</style>
+
+      {/* Hero — Mode 3 */}
+      <div className="relative z-10 w-full max-w-3xl">
+        <HeroCentered />
+      </div>
+
+      {/* 3D Industry Carousels — vertically stacked, scroll-driven */}
+      <div className="relative z-10 w-full" style={{ ...FW, background: "#0d0d0d" }}>
+        <div style={{ padding: "clamp(80px, 12vw, 160px) 24px 0" }}>
+          <h2 className="text-center" style={{ ...H_STYLE, fontSize: "clamp(32px, 4.5vw, 60px)", color: "#ffffff", lineHeight: 1.1 }}>
+            We specialise in
+          </h2>
+        </div>
+        {industries.map((ind, idx) => (
+          <IndustryCarousel3D key={ind.slug} ind={ind} images={industryImages[ind.slug]} idx={idx} />
+        ))}
+      </div>
+
+    </div>
   );
 }

@@ -30,7 +30,7 @@ export default function ServicesPage() {
         },
         {
           num: "03", title: "Brand Packages", from: "£1,000+",
-          desc: "Landlords choose agents they trust. A strong, consistent brand builds that trust before you've even picked up the phone.",
+          desc: "Trust is everything in lettings. A distinctive brand is how you earn it.",
           details: ["Logo design (multiple concepts)", "Colour palette & typography system", "Brand guidelines document", "Digital asset kit (social, web, email)", "Stationery suite", "Brand refresh options available"],
           highlight: "Full rebrand to brand refresh: options at every budget.",
         },

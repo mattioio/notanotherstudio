@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-type Project = {
+export type Project = {
   num: string;
   client: string;
   location: string;
@@ -10,34 +10,41 @@ type Project = {
   images: string[];
 };
 
-const projects: Project[] = [
+const commercialProjects: Project[] = [
   {
     num: "01",
     client: "Jenkins Law",
     location: "London",
     services: ["Web", "Print"],
-    images: ["/images/work-jenkins1.jpeg", "/images/work-jenkins2.jpeg"],
+    images: ["/images/commercial-property/work-jenkins1.jpeg", "/images/commercial-property/work-jenkins2.jpeg"],
   },
   {
     num: "02",
     client: "Neill Mylroie Real Estate",
     location: "Manchester",
     services: ["Web", "Brand"],
-    images: ["/images/work-neill1.jpeg", "/images/work-neill2.jpeg"],
+    images: ["/images/commercial-property/work-neill1.jpeg", "/images/commercial-property/work-neill2.jpeg"],
   },
   {
     num: "03",
     client: "Market Place Hounslow",
     location: "London",
     services: ["Brand", "Web", "Print"],
-    images: ["/images/work-marketplace1.jpeg", "/images/work-marketplace2.jpeg"],
+    images: ["/images/commercial-property/work-marketplace1.jpeg", "/images/commercial-property/work-marketplace2.jpeg"],
   },
   {
     num: "04",
+    client: "Kingsland Dalston",
+    location: "London",
+    services: ["Web", "Brand"],
+    images: ["/images/commercial-property/work-marketplace1.jpeg", "/images/commercial-property/work-marketplace2.jpeg"],
+  },
+  {
+    num: "05",
     client: "Your project here",
     location: "We have space for one new client",
     services: [],
-    images: ["/images/work-yourproject.jpeg"],
+    images: ["/images/commercial-property/work-yourproject.jpeg"],
   },
 ];
 
@@ -64,9 +71,16 @@ function EyeIcon({ active }: { active: boolean }) {
   );
 }
 
-export default function WorkSection() {
+interface WorkSectionProps {
+  projects?: Project[];
+}
+
+export default function WorkSection({ projects = commercialProjects }: WorkSectionProps) {
   const [active, setActive] = useState(0);
   const [carouselIdx, setCarouselIdx] = useState(0);
+  const windowRef = useRef<HTMLDivElement>(null);
+  const mouseNorm = useRef({ x: 0.5, y: 0.5 });
+  const smooth = useRef({ x: 0.5, y: 0.5 });
 
   useEffect(() => {
     const imgs = projects[active].images;
@@ -75,7 +89,35 @@ export default function WorkSection() {
       setCarouselIdx((prev) => (prev + 1) % imgs.length);
     }, 3500);
     return () => clearInterval(id);
-  }, [active]);
+  }, [active, projects]);
+
+  // Window parallax effect for desktop image panel
+  useEffect(() => {
+    let raf: number;
+    const tick = () => {
+      smooth.current.x += (mouseNorm.current.x - smooth.current.x) * 0.04;
+      smooth.current.y += (mouseNorm.current.y - smooth.current.y) * 0.04;
+      const mx = smooth.current.x - 0.5;
+      const my = smooth.current.y - 0.5;
+      if (windowRef.current) {
+        windowRef.current.style.transform = `translate(${mx * -24}px, ${my * -18}px)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    const onMove = (e: MouseEvent) => {
+      mouseNorm.current = {
+        x: e.clientX / window.innerWidth,
+        y: e.clientY / window.innerHeight,
+      };
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("mousemove", onMove);
+    };
+  }, []);
 
   const handleMouseEnter = (i: number) => {
     if (i !== active) {
@@ -85,9 +127,19 @@ export default function WorkSection() {
   };
 
   return (
-    <section id="work" className="bg-[#0d0d0d] text-white">
+    <section id="work" className="relative bg-[#0d0d0d] text-white">
+      {/* Grunge texture */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          backgroundImage: "url('/images/Texturelabs_Grunge_316M.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.2,
+        }}
+      />
       {/* ── Header ── */}
-      <div className="px-6 md:px-12 pt-24 pb-12 flex items-end justify-between gap-6 flex-wrap border-b border-white/10">
+      <div className="relative z-10 px-6 md:px-12 pt-24 pb-12 flex items-end justify-between gap-6 flex-wrap border-b border-white/10">
         <h2
           className="syne leading-[1.0] tracking-[-0.03em] fade-up"
           style={{ fontSize: "clamp(36px, 4vw, 56px)" }}
@@ -95,7 +147,7 @@ export default function WorkSection() {
           Work that wins<br />business
         </h2>
         <a
-          href="/#contact"
+          href="#contact"
           className="inline-block px-8 py-4 bg-[#f0c93a] text-[#0d0d0d] font-bold text-sm tracking-[0.05em] uppercase no-underline hover:bg-white transition-colors fade-up flex-shrink-0"
         >
           Start a project →
@@ -103,7 +155,7 @@ export default function WorkSection() {
       </div>
 
       {/* ── Body: list left + sticky image right ── */}
-      <div className="flex flex-col lg:flex-row">
+      <div className="relative z-10 flex flex-col lg:flex-row">
 
         {/* Left: project list */}
         <div className="lg:w-[48%] flex flex-col">
@@ -176,7 +228,7 @@ export default function WorkSection() {
                   <EyeIcon active={active === i} />
                 ) : (
                   <a
-                    href="/#contact"
+                    href="#contact"
                     className="flex-shrink-0 text-[11px] font-bold tracking-[0.1em] uppercase no-underline px-4 py-2.5 border transition-all duration-200 whitespace-nowrap"
                     style={{
                       borderColor: active === i ? "#f0c93a" : "rgba(240,201,58,0.35)",
@@ -231,23 +283,35 @@ export default function WorkSection() {
           className="hidden lg:block lg:w-[52%] sticky top-[72px]"
           style={{ height: "calc(100vh - 72px)" }}
         >
-          <div className="relative w-full h-full">
-            {/* All project images stacked — active one visible */}
-            {projects.map(({ client, images }, i) =>
-              images.map((src, idx) => (
-                <div
-                  key={`${i}-${idx}`}
-                  className="absolute inset-0"
-                  style={{
-                    opacity: active === i && carouselIdx === idx ? 1 : 0,
-                    transition: "opacity 0.7s ease",
-                  }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt={client} className="w-full h-full object-cover" />
-                </div>
-              ))
-            )}
+          <div className="relative w-full h-full overflow-hidden">
+            {/* Oversized inner container for Window panning */}
+            <div
+              ref={windowRef}
+              className="absolute"
+              style={{
+                inset: "-7.5%",
+                width: "115%",
+                height: "115%",
+                willChange: "transform",
+              }}
+            >
+              {/* All project images stacked — active one visible */}
+              {projects.map(({ client, images }, i) =>
+                images.map((src, idx) => (
+                  <div
+                    key={`${i}-${idx}`}
+                    className="absolute inset-0"
+                    style={{
+                      opacity: active === i && carouselIdx === idx ? 1 : 0,
+                      transition: "opacity 0.7s ease",
+                    }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={src} alt={client} className="w-full h-full object-cover" />
+                  </div>
+                ))
+              )}
+            </div>
 
             {/* Carousel indicators — only when active project has multiple images */}
             {projects[active].images.length > 1 && (

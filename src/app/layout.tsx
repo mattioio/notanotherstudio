@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Syne, Plus_Jakarta_Sans } from "next/font/google";
+import {
+  Syne,
+  Plus_Jakarta_Sans,
+} from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+
 
 const syne = Syne({
   variable: "--font-syne",
