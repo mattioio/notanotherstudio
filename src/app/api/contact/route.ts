@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(req: NextRequest) {
   const { name, company, email, interests, message } = await req.json();
 
   if (!name || !email) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
   }
+
+  if (!process.env.RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY not set — skipping email send");
+    return NextResponse.json({ ok: true });
+  }
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   const { error } = await resend.emails.send({
     from: "Not Another Studio <hello@notanotherstudio.co.uk>",
