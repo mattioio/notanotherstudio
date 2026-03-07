@@ -9,14 +9,15 @@ const sectionLinks = [
   { key: "process",  label: "Process"  },
 ];
 
-// Height of this sticky bar (48px) + a small buffer
-const OFFSET = 48 + 16;
+// Sticky offset: 20px (top-5) + bar height + buffer
+const OFFSET = 20 + 48 + 16;
 
 const NAV_H = 48;
 
 export default function SectionNav() {
   const [activeSection, setActiveSection] = useState<string>("");
   const [slideUp, setSlideUp] = useState(0);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     const sectionEls = sectionLinks
@@ -36,8 +37,15 @@ export default function SectionNav() {
       const processEl = document.getElementById("process");
       if (processEl) {
         const bottom = processEl.getBoundingClientRect().bottom;
-        // When bottom drops below NAV_H, start sliding the nav upward
         setSlideUp(Math.max(0, Math.min(NAV_H, NAV_H - bottom)));
+      }
+
+      // Hide when the packages tab bar physically reaches this nav
+      // (i.e. it's stuck at the top), but reappear for the Process section
+      const pkgTabBar = document.querySelector("[data-packages-tabbar]");
+      if (pkgTabBar) {
+        const rect = pkgTabBar.getBoundingClientRect();
+        setHidden(rect.top <= 60 && rect.bottom > 0 && current !== "process");
       }
     };
 
@@ -47,28 +55,35 @@ export default function SectionNav() {
   }, []);
 
   return (
-    <div
-      className="sticky top-0 z-30 bg-white border-b border-black/10"
-      style={{ transform: `translateY(-${slideUp}px)` }}
-    >
-      <div className="flex items-center justify-center h-12 gap-0">
-        {sectionLinks.map(({ key, label }) => (
-          <a
-            key={key}
-            href={`#${key}`}
-            className={`relative h-full flex items-center px-5 text-[13px] font-medium no-underline transition-colors duration-150 ${
-              activeSection === key
-                ? "text-[#0d0d0d]"
-                : "text-[#aaaaaa] hover:text-[#0d0d0d]"
-            }`}
-          >
-            {label}
-            {activeSection === key && (
-              <span className="absolute inset-x-0 bottom-0 h-[4px] bg-[#f0c93a]" />
-            )}
-          </a>
-        ))}
+    <>
+      {/* Spacer — breathing room from marquee above (doesn't affect sticky position) */}
+      <div className="pt-8" aria-hidden="true" />
+
+      <div
+        className="sticky top-5 z-30 flex justify-center pb-4"
+        style={{
+          transform: `translateY(-${slideUp}px)`,
+          opacity: hidden ? 0 : 1,
+          pointerEvents: hidden ? "none" : "auto",
+          transition: "opacity 0.3s ease",
+        }}
+      >
+        <nav className="inline-flex items-center gap-0.5 md:gap-1 bg-white/70 backdrop-blur-xl rounded-full px-1 md:px-1.5 py-1.5 shadow-[0_4px_30px_rgba(0,0,0,0.10)] border border-white/50">
+          {sectionLinks.map(({ key, label }) => (
+            <a
+              key={key}
+              href={`#${key}`}
+              className={`px-3 md:px-5 py-1.5 md:py-2 text-[11px] md:text-[13px] font-medium no-underline rounded-full transition-all duration-200 ${
+                activeSection === key
+                  ? "bg-[#0d0d0d] text-white"
+                  : "text-[#555] hover:text-[#0d0d0d] hover:bg-black/5"
+              }`}
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
       </div>
-    </div>
+    </>
   );
 }

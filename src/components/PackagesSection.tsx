@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 
 type TabKey = "web" | "print" | "brand";
 type TierKey =
@@ -123,21 +123,8 @@ export default function PackagesSection() {
   const [activeTab, setActiveTab] = useState<TabKey>("web");
   const [activeTier, setActiveTier] = useState<TierKey>("web-starter");
   const [openAccordions, setOpenAccordions] = useState<Set<TierKey>>(new Set());
-  const [isStuck, setIsStuck] = useState(false);
   const tabBarRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const check = () => {
-      const el = tabBarRef.current;
-      if (!el) return;
-      // Turn white as soon as it touches the SectionNav (48px tall, sticky at top-0)
-      setIsStuck(el.getBoundingClientRect().top <= 48);
-    };
-    window.addEventListener("scroll", check, { passive: true });
-    check();
-    return () => window.removeEventListener("scroll", check);
-  }, []);
 
   function handleTabChange(tab: TabKey) {
     setActiveTab(tab);
@@ -177,26 +164,23 @@ export default function PackagesSection() {
 
       {/* ── DESKTOP ──────────────────────────────────────────────── */}
 
-      {/* Sticky tab bar — slides over the SectionNav when in packages block */}
-      <div ref={tabBarRef} className={`hidden md:block sticky top-0 z-40 transition-colors duration-200 ${isStuck ? "bg-white border-b border-black/10" : ""}`}>
-        <div className="flex items-center justify-center h-12 gap-0">
+      {/* Sticky tab bar — pill style */}
+      <div ref={tabBarRef} data-packages-tabbar className="hidden md:flex sticky top-5 z-40 justify-center pb-4">
+        <nav className="inline-flex items-center gap-1 bg-white/70 backdrop-blur-xl rounded-full px-1.5 py-1.5 shadow-[0_4px_30px_rgba(0,0,0,0.10)] border border-white/50">
           {tabs.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => handleTabChange(key)}
-              className={`relative h-full flex items-center px-5 text-[13px] font-medium border-none bg-transparent cursor-pointer transition-colors duration-150 ${
+              className={`px-5 py-2 text-[13px] font-medium border-none rounded-full cursor-pointer transition-all duration-200 ${
                 activeTab === key
-                  ? "text-[#0d0d0d]"
-                  : "text-[#aaaaaa] hover:text-[#0d0d0d]"
+                  ? "bg-[#0d0d0d] text-white"
+                  : "bg-transparent text-[#555] hover:text-[#0d0d0d] hover:bg-black/5"
               }`}
             >
               {label}
-              {activeTab === key && (
-                <span className="absolute inset-x-0 bottom-0 h-[4px] bg-[#f0c93a]" />
-              )}
             </button>
           ))}
-        </div>
+        </nav>
       </div>
 
       {/* Desktop two-column content */}
@@ -245,7 +229,7 @@ export default function PackagesSection() {
             </ul>
             <a
               href="/#contact"
-              className="inline-block px-8 py-4 bg-[#0d0d0d] text-[#f5f3ef] font-bold text-[14px] tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] transition-colors"
+              className="inline-block px-8 py-4 rounded-full bg-[#0d0d0d] text-[#f5f3ef] font-bold text-[14px] tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] transition-colors"
             >
               Get started
             </a>

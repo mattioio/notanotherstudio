@@ -17,7 +17,7 @@ export default function MusicPage() {
         </p>
         <a
           href="/for/commercial-properties#contact"
-          className="inline-block px-8 py-4 bg-[#0d0d0d] text-[#f5f3ef] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] transition-colors"
+          className="inline-block px-8 py-4 rounded-full bg-[#0d0d0d] text-[#f5f3ef] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] transition-colors"
         >
           Get in touch
         </a>
