@@ -70,28 +70,28 @@ const workProjects = [
     client: "Zego",
     location: "London",
     services: ["UX", "Product"],
-    images: ["/images/work-zego1.jpeg", "/images/work-zego2.jpeg"],
+    images: ["/images/product-design/work-zego1.jpg", "/images/product-design/work-zego2.jpg"],
   },
   {
     num: "02",
     client: "Orchid ID",
     location: "UK",
     services: ["Brand", "UX"],
-    images: ["/images/work-orchid1.jpeg", "/images/work-orchid2.jpeg"],
+    images: ["/images/product-design/work-orchid1.jpg", "/images/product-design/work-orchid2.jpg"],
   },
   {
     num: "03",
     client: "Striing.io",
     location: "UK",
     services: ["Product", "Web"],
-    images: ["/images/work-striing1.jpeg", "/images/work-striing2.jpeg"],
+    images: ["/images/product-design/work-striing1.jpg", "/images/product-design/work-striing2.jpg"],
   },
   {
     num: "04",
     client: "Deo",
     location: "UK",
     services: ["UX", "Brand"],
-    images: ["/images/work-deo1.jpeg", "/images/work-deo2.jpeg"],
+    images: ["/images/product-design/work-deo1.jpg", "/images/product-design/work-deo2.jpg"],
   },
   {
     num: "05",
@@ -119,7 +119,7 @@ export default function ProductDesignPage() {
               We design apps, tools and digital products that feel right from day one. UX research, interface design and brand — built to scale with your business.
             </p>
             <div className="flex flex-wrap items-center gap-7 fade-up visible fade-up-delay-3">
-              <a href="#packages" className="inline-block px-8 py-4 bg-[#0d0d0d] text-[#f5f3ef] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] hover:-translate-y-0.5 transition-all">
+              <a href="#packages" className="inline-block px-8 py-4 rounded-full bg-[#0d0d0d] text-[#f5f3ef] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] hover:-translate-y-0.5 transition-all">
                 View Packages
               </a>
               <a href="#work" className="inline-flex items-center gap-2 text-sm font-semibold text-[#0d0d0d] no-underline border-b border-[#0d0d0d] pb-0.5 hover:text-[#6b6b6b] hover:border-[#6b6b6b] transition-colors">
@@ -130,10 +130,10 @@ export default function ProductDesignPage() {
         </div>
         <div className="relative flex-1 overflow-hidden" style={{ height: "clamp(40vh, 100vh, 100vh)", minHeight: "40vh" }}>
           <HeroCarousel images={[
-            "/images/product-design/banner1.jpeg",
-            "/images/product-design/banner2.jpeg",
-            "/images/product-design/banner3.jpeg",
-            "/images/product-design/banner4.jpeg",
+            "/images/product-design/banner1.jpg",
+            "/images/product-design/banner2.jpg",
+            "/images/product-design/banner3.jpg",
+            "/images/product-design/banner4.jpg",
           ]} />
         </div>
       </section>
@@ -148,6 +148,8 @@ export default function ProductDesignPage() {
         </div>
       </div>
 
+      {/* Wrapper stops sticky SectionNav before the contact/footer area */}
+      <div>
       <SectionNav />
 
       {/* ── SERVICES ── */}
@@ -186,7 +188,7 @@ export default function ProductDesignPage() {
         <div>
           <div className="section-label mb-14 fade-up">How we work</div>
           <h2 className="syne leading-[1.05] tracking-[-0.03em] mb-5 fade-up" style={{ fontSize: "clamp(36px, 4vw, 52px)" }}>
-            Research first. Design always.
+            Research first. Then design.
           </h2>
           <p className="text-base text-[#6b6b6b] leading-[1.7] mb-10 font-light fade-up">
             We don&apos;t guess. Every design decision is grounded in real user behaviour and your business goals. One brief, two checkpoints, one handoff.
@@ -208,6 +210,7 @@ export default function ProductDesignPage() {
           <ScrollBadge />
         </div>
       </section>
+      </div>
 
       <HomeContactSection
         headline={<>Ready to build <span className="text-[#f0c93a]">something users love?</span></>}

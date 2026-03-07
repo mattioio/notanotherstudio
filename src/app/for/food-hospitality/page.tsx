@@ -70,21 +70,21 @@ const workProjects = [
     client: "Market Place",
     location: "London",
     services: ["Brand", "Web", "Print"],
-    images: ["/images/work-marketplace1.jpeg", "/images/work-marketplace2.jpeg"],
+    images: ["/images/food/work-marketplace1.jpg", "/images/food/work-marketplace2.jpg"],
   },
   {
     num: "02",
     client: "Chelo",
     location: "London",
     services: ["Brand", "Print"],
-    images: ["/images/work-chelo1.jpeg", "/images/work-chelo2.jpeg"],
+    images: ["/images/food/work-chelo1.jpg", "/images/food/work-chelo2.jpg"],
   },
   {
     num: "03",
     client: "Rusto",
     location: "UK",
     services: ["Brand", "Web"],
-    images: ["/images/work-rusto1.jpeg", "/images/work-rusto2.jpeg"],
+    images: ["/images/food/work-rusto1.jpg", "/images/food/work-rusto2.jpg"],
   },
   {
     num: "04",
@@ -112,7 +112,7 @@ export default function FoodPage() {
               We design menus, brand identities and websites for food businesses that want to attract the right customers and keep them coming back.
             </p>
             <div className="flex flex-wrap items-center gap-7 fade-up visible fade-up-delay-3">
-              <a href="#packages" className="inline-block px-8 py-4 bg-[#0d0d0d] text-[#f5f3ef] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] hover:-translate-y-0.5 transition-all">
+              <a href="#packages" className="inline-block px-8 py-4 rounded-full bg-[#0d0d0d] text-[#f5f3ef] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] hover:-translate-y-0.5 transition-all">
                 View Packages
               </a>
               <a href="#work" className="inline-flex items-center gap-2 text-sm font-semibold text-[#0d0d0d] no-underline border-b border-[#0d0d0d] pb-0.5 hover:text-[#6b6b6b] hover:border-[#6b6b6b] transition-colors">
@@ -123,10 +123,9 @@ export default function FoodPage() {
         </div>
         <div className="relative flex-1 overflow-hidden" style={{ height: "clamp(40vh, 100vh, 100vh)", minHeight: "40vh" }}>
           <HeroCarousel images={[
-            "/images/food/banner1.jpeg",
-            "/images/food/banner2.jpeg",
-            "/images/food/banner3.jpeg",
-            "/images/food/banner4.jpeg",
+            "/images/food/banner1.jpg",
+            "/images/food/banner2.jpg",
+            "/images/food/banner3.jpg",
           ]} />
         </div>
       </section>
@@ -141,6 +140,8 @@ export default function FoodPage() {
         </div>
       </div>
 
+      {/* Wrapper stops sticky SectionNav before the contact/footer area */}
+      <div>
       <SectionNav />
 
       {/* ── SERVICES ── */}
@@ -201,6 +202,7 @@ export default function FoodPage() {
           <ScrollBadge />
         </div>
       </section>
+      </div>
 
       <HomeContactSection
         headline={<>Ready to attract <span className="text-[#f0c93a]">more of the right guests?</span></>}

@@ -36,6 +36,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${syne.variable} ${jakarta.variable}`}>
+        {/* Global SVG filter for rough highlight edges */}
+        <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+          <defs>
+            <filter id="nas-rough" x="-8%" y="-30%" width="116%" height="160%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="8" result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </defs>
+        </svg>
         <Nav />
         <main>{children}</main>
         <Footer />

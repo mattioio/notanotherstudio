@@ -29,7 +29,7 @@ body {
   font-family: var(--font-jakarta, 'Plus Jakarta Sans', sans-serif);
   font-size: 16px;
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -39,44 +39,36 @@ body {
   font-weight: var(--heading-weight, 700);
 }
 
-/* Section label pattern */
+/* Section label — soft pill */
 .section-label {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--nas-mid);
-}
-.section-label::before {
-  content: '';
-  display: block;
-  width: 32px;
-  height: 1px;
-  background: var(--nas-mid);
-  flex-shrink: 0;
-}
-
-/* Eyebrow (used in hero) */
-.eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--nas-mid);
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 9999px;
+  padding: 6px 16px;
+}
+.section-label::before {
+  display: none;
+}
+
+/* Eyebrow — soft pill */
+.eyebrow {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #0d0d0d;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 9999px;
+  padding: 7px 18px;
 }
 .eyebrow::before {
-  content: '';
-  display: block;
-  width: 32px;
-  height: 1px;
-  background: var(--nas-mid);
-  flex-shrink: 0;
+  display: none;
 }
 
 /* Fade-up scroll animations */

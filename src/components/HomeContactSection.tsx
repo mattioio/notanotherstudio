@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FooterCompass } from "./Footer";
 
 const chips = [
   { label: "Web Package", value: "Web Package" },
@@ -61,8 +62,11 @@ export default function HomeContactSection({
   return (
     <section
       id="contact"
-      className="relative px-6 md:px-12 py-24 lg:py-32 bg-[#0d0d0d] text-white grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center"
+      className="relative bg-[#0d0d0d] text-white"
     >
+      {/* Compass needle canvas */}
+      <FooterCompass />
+
       {/* Grunge texture */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -71,8 +75,11 @@ export default function HomeContactSection({
           backgroundSize: "cover",
           backgroundPosition: "center",
           opacity: 0.2,
+          zIndex: 2,
         }}
       />
+
+      <div className="relative z-10 px-6 md:px-12 py-24 lg:py-32 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
       {/* Left — copy */}
       <div>
         <h2
@@ -110,7 +117,7 @@ export default function HomeContactSection({
                 name="name"
                 placeholder="Jane Smith"
                 required
-                className="bg-white/6 border border-white/12 text-white px-4 py-3.5 text-[15px] font-light outline-none focus:border-[#f0c93a] transition-colors placeholder:text-white/20"
+                className="bg-white/8 backdrop-blur-lg border border-white/10 rounded-xl text-white px-4 py-3.5 text-[15px] font-light outline-none focus:border-[#f0c93a] transition-colors placeholder:text-white/20"
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -120,8 +127,8 @@ export default function HomeContactSection({
               <input
                 type="text"
                 name="company"
-                placeholder="Acme Commercial Lettings"
-                className="bg-white/6 border border-white/12 text-white px-4 py-3.5 text-[15px] font-light outline-none focus:border-[#f0c93a] transition-colors placeholder:text-white/20"
+                placeholder="Your company"
+                className="bg-white/8 backdrop-blur-lg border border-white/10 rounded-xl text-white px-4 py-3.5 text-[15px] font-light outline-none focus:border-[#f0c93a] transition-colors placeholder:text-white/20"
               />
             </div>
           </div>
@@ -133,9 +140,9 @@ export default function HomeContactSection({
             <input
               type="email"
               name="email"
-              placeholder="jane@smithestates.co.uk"
+              placeholder="you@company.co.uk"
               required
-              className="bg-white/6 border border-white/12 text-white px-4 py-3.5 text-[15px] font-light outline-none focus:border-[#f0c93a] transition-colors placeholder:text-white/20"
+              className="bg-white/8 backdrop-blur-lg border border-white/10 rounded-xl text-white px-4 py-3.5 text-[15px] font-light outline-none focus:border-[#f0c93a] transition-colors placeholder:text-white/20"
             />
           </div>
 
@@ -151,10 +158,10 @@ export default function HomeContactSection({
                     key={value}
                     type="button"
                     onClick={() => toggleChip(value)}
-                    className={`px-4 py-2 text-[13px] font-medium border transition-all cursor-pointer ${
+                    className={`px-4 py-2 text-[13px] font-medium border rounded-full transition-all cursor-pointer ${
                       isSelected
                         ? "bg-[#f0c93a] border-[#f0c93a] text-[#0d0d0d] font-bold"
-                        : "bg-transparent border-white/18 text-white/60 hover:border-white/50 hover:text-white"
+                        : "bg-white/8 backdrop-blur-lg border-white/10 text-white/60 hover:border-white/50 hover:text-white"
                     }`}
                   >
                     {label}
@@ -172,7 +179,7 @@ export default function HomeContactSection({
               name="message"
               placeholder="Briefly describe your agency, your goals, and any timing requirements..."
               rows={4}
-              className="bg-white/6 border border-white/12 text-white px-4 py-3.5 text-[15px] font-light outline-none focus:border-[#f0c93a] transition-colors resize-y placeholder:text-white/20"
+              className="bg-white/8 backdrop-blur-lg border border-white/10 rounded-xl text-white px-4 py-3.5 text-[15px] font-light outline-none focus:border-[#f0c93a] transition-colors resize-y placeholder:text-white/20"
             />
           </div>
 
@@ -182,12 +189,13 @@ export default function HomeContactSection({
           <button
             type="submit"
             disabled={loading}
-            className="self-start px-10 py-4 bg-[#f0c93a] text-[#0d0d0d] font-bold text-[14px] tracking-[0.05em] uppercase border-none cursor-pointer hover:-translate-y-0.5 hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0"
+            className="self-start px-10 py-4 rounded-full bg-[#f0c93a] text-[#0d0d0d] font-bold text-[14px] tracking-[0.05em] uppercase border-none cursor-pointer hover:-translate-y-0.5 hover:opacity-90 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0"
           >
             {loading ? "Sending..." : "Send enquiry →"}
           </button>
         </form>
       )}
+      </div>
     </section>
   );
 }

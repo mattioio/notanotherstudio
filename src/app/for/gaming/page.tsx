@@ -105,7 +105,7 @@ export default function GamingPage() {
               We design studio branding, marketing materials and digital presence for game studios and indie developers who want to build something memorable.
             </p>
             <div className="flex flex-wrap items-center gap-7 fade-up visible fade-up-delay-3">
-              <a href="#packages" className="inline-block px-8 py-4 bg-[#0d0d0d] text-[#f5f3ef] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] hover:-translate-y-0.5 transition-all">
+              <a href="#packages" className="inline-block px-8 py-4 rounded-full bg-[#0d0d0d] text-[#f5f3ef] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] hover:-translate-y-0.5 transition-all">
                 View Packages
               </a>
               <a href="#work" className="inline-flex items-center gap-2 text-sm font-semibold text-[#0d0d0d] no-underline border-b border-[#0d0d0d] pb-0.5 hover:text-[#6b6b6b] hover:border-[#6b6b6b] transition-colors">
@@ -134,6 +134,8 @@ export default function GamingPage() {
         </div>
       </div>
 
+      {/* Wrapper stops sticky SectionNav before the contact/footer area */}
+      <div>
       <SectionNav />
 
       {/* ── SERVICES ── */}
@@ -194,6 +196,7 @@ export default function GamingPage() {
           <ScrollBadge />
         </div>
       </section>
+      </div>
 
       <HomeContactSection
         headline={<>Ready to build <span className="text-[#f0c93a]">something worth playing?</span></>}
