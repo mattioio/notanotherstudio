@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useSwipe } from "@/hooks/useSwipe";
 
 export type Project = {
   num: string;
@@ -9,44 +10,6 @@ export type Project = {
   services: string[];
   images: string[];
 };
-
-const commercialProjects: Project[] = [
-  {
-    num: "01",
-    client: "Jenkins Law",
-    location: "London",
-    services: ["Web", "Print"],
-    images: ["/images/commercial-property/work-jenkins1.jpeg", "/images/commercial-property/work-jenkins2.jpeg"],
-  },
-  {
-    num: "02",
-    client: "Neill Mylroie Real Estate",
-    location: "Manchester",
-    services: ["Web", "Brand"],
-    images: ["/images/commercial-property/work-neill1.jpeg", "/images/commercial-property/work-neill2.jpeg"],
-  },
-  {
-    num: "03",
-    client: "Market Place Hounslow",
-    location: "London",
-    services: ["Brand", "Web", "Print"],
-    images: ["/images/commercial-property/work-marketplace1.jpeg", "/images/commercial-property/work-marketplace2.jpeg"],
-  },
-  {
-    num: "04",
-    client: "Kingsland Dalston",
-    location: "London",
-    services: ["Web", "Brand"],
-    images: ["/images/commercial-property/work-marketplace1.jpeg", "/images/commercial-property/work-marketplace2.jpeg"],
-  },
-  {
-    num: "05",
-    client: "Your project here",
-    location: "We have space for one new client",
-    services: [],
-    images: ["/images/commercial-property/work-yourproject.jpeg"],
-  },
-];
 
 function EyeIcon({ active }: { active: boolean }) {
   return (
@@ -72,24 +35,43 @@ function EyeIcon({ active }: { active: boolean }) {
 }
 
 interface WorkSectionProps {
-  projects?: Project[];
+  projects: Project[];
 }
 
-export default function WorkSection({ projects = commercialProjects }: WorkSectionProps) {
+export default function WorkSection({ projects }: WorkSectionProps) {
   const [active, setActive] = useState(0);
   const [carouselIdx, setCarouselIdx] = useState(0);
   const windowRef = useRef<HTMLDivElement>(null);
   const mouseNorm = useRef({ x: 0.5, y: 0.5 });
   const smooth = useRef({ x: 0.5, y: 0.5 });
+  const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
-  useEffect(() => {
-    const imgs = projects[active].images;
+  const imgs = projects[active].images;
+
+  const resetTimer = useCallback(() => {
+    clearInterval(timerRef.current);
     if (imgs.length <= 1) return;
-    const id = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setCarouselIdx((prev) => (prev + 1) % imgs.length);
     }, 3500);
-    return () => clearInterval(id);
-  }, [active, projects]);
+  }, [imgs.length]);
+
+  useEffect(() => {
+    resetTimer();
+    return () => clearInterval(timerRef.current);
+  }, [resetTimer]);
+
+  const nextImg = useCallback(() => {
+    setCarouselIdx((prev) => (prev + 1) % imgs.length);
+    resetTimer();
+  }, [imgs.length, resetTimer]);
+
+  const prevImg = useCallback(() => {
+    setCarouselIdx((prev) => (prev - 1 + imgs.length) % imgs.length);
+    resetTimer();
+  }, [imgs.length, resetTimer]);
+
+  const swipe = useSwipe(nextImg, prevImg);
 
   // Window parallax effect for desktop image panel
   useEffect(() => {
@@ -244,6 +226,7 @@ export default function WorkSection({ projects = commercialProjects }: WorkSecti
               <div
                 className="lg:hidden relative overflow-hidden"
                 style={{ height: active === i ? "220px" : "0", transition: "height 0.4s ease" }}
+                {...(active === i ? swipe : {})}
               >
                 {images.map((src, idx) => (
                   <div
@@ -257,17 +240,20 @@ export default function WorkSection({ projects = commercialProjects }: WorkSecti
                 ))}
                 {/* Mobile carousel indicators */}
                 {images.length > 1 && (
-                  <div className="absolute bottom-4 right-4 flex items-center gap-2 z-10">
+                  <div
+                    className="absolute bottom-4 right-4 flex items-center gap-[6px] z-10 rounded-full px-2.5 py-2"
+                    style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(8px)" }}
+                  >
                     {images.map((_, idx) => (
                       <div
                         key={idx}
                         style={{
-                          width: idx === carouselIdx ? "32px" : "8px",
-                          height: "3px",
-                          background: idx === carouselIdx ? "#f0c93a" : "rgba(255,255,255,0.35)",
-                          border: idx === carouselIdx ? "none" : "1px solid rgba(255,255,255,0.25)",
+                          width: idx === carouselIdx ? "28px" : "6px",
+                          height: "6px",
+                          borderRadius: "3px",
+                          background: idx === carouselIdx ? "#f0c93a" : "rgba(255,255,255,0.5)",
                           flexShrink: 0,
-                          transition: "width 0.35s ease, background 0.35s ease",
+                          transition: "width 0.35s cubic-bezier(0.22,1,0.36,1), background 0.35s ease",
                         }}
                       />
                     ))}
@@ -283,7 +269,7 @@ export default function WorkSection({ projects = commercialProjects }: WorkSecti
           className="hidden lg:block lg:w-[52%] sticky top-[72px]"
           style={{ height: "calc(100vh - 72px)" }}
         >
-          <div className="relative w-full h-full overflow-hidden">
+          <div className="relative w-full h-full overflow-hidden" {...swipe}>
             {/* Oversized inner container for Window panning */}
             <div
               ref={windowRef}
@@ -315,21 +301,25 @@ export default function WorkSection({ projects = commercialProjects }: WorkSecti
 
             {/* Carousel indicators — only when active project has multiple images */}
             {projects[active].images.length > 1 && (
-              <div className="absolute bottom-7 right-7 flex items-center gap-2 z-10">
+              <div
+                className="absolute bottom-6 right-6 flex items-center gap-[6px] z-10 rounded-full px-2.5 py-2"
+                style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(8px)" }}
+              >
                 {projects[active].images.map((_, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setCarouselIdx(idx)}
+                    onClick={() => { setCarouselIdx(idx); resetTimer(); }}
                     aria-label={`Image ${idx + 1}`}
                     style={{
-                      width: idx === carouselIdx ? "40px" : "10px",
-                      height: "3px",
-                      background: idx === carouselIdx ? "#f0c93a" : "rgba(255,255,255,0.35)",
-                      border: idx === carouselIdx ? "none" : "1px solid rgba(255,255,255,0.25)",
+                      width: idx === carouselIdx ? "28px" : "6px",
+                      height: "6px",
+                      borderRadius: "3px",
+                      background: idx === carouselIdx ? "#f0c93a" : "rgba(255,255,255,0.5)",
+                      border: "none",
                       cursor: "pointer",
                       padding: 0,
                       flexShrink: 0,
-                      transition: "width 0.35s ease, background 0.35s ease",
+                      transition: "width 0.35s cubic-bezier(0.22,1,0.36,1), background 0.35s ease",
                     }}
                   />
                 ))}

@@ -90,10 +90,9 @@ export default function StaggeredGridSection() {
       ref={secRef}
       className="relative"
       style={{
-        width: "100vw",
-        marginLeft: "calc(-50vw + 50%)",
+        width: "100%",
         background: "linear-gradient(to bottom, #ffffff, var(--nas-white, #f5f3ef))",
-        overflow: "hidden",
+        overflow: "clip",
       }}
     >
       <style>{`

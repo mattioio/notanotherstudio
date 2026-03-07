@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 
 type TabKey = "web" | "print" | "brand";
 type TierKey =
@@ -123,21 +123,8 @@ export default function PackagesSection() {
   const [activeTab, setActiveTab] = useState<TabKey>("web");
   const [activeTier, setActiveTier] = useState<TierKey>("web-starter");
   const [openAccordions, setOpenAccordions] = useState<Set<TierKey>>(new Set());
-  const [isStuck, setIsStuck] = useState(false);
   const tabBarRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const check = () => {
-      const el = tabBarRef.current;
-      if (!el) return;
-      // Detect when stuck below the main nav
-      setIsStuck(el.getBoundingClientRect().top <= 100);
-    };
-    window.addEventListener("scroll", check, { passive: true });
-    check();
-    return () => window.removeEventListener("scroll", check);
-  }, []);
 
   function handleTabChange(tab: TabKey) {
     setActiveTab(tab);

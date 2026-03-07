@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef, type CSSProperties } from "react";
+import { useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
 import ScrambleText from "@/components/ScrambleText";
 import StaggeredGridSection from "@/components/StaggeredGridSection";
+import { useSwipe } from "@/hooks/useSwipe";
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -18,7 +19,6 @@ const industries = [
   { num: "03", label: "Food & Hospitality",  slug: "food-hospitality"      },
 ];
 
-const FW: CSSProperties = { width: "100vw", marginLeft: "calc(-50vw + 50%)" };
 const FS_CENTERED = "clamp(36px, 14vw, 76px)";
 
 const H_STYLE: CSSProperties = {
@@ -66,7 +66,7 @@ function HeroCentered() {
   });
 
   return (
-    <div style={{ ...FW, marginTop: "-5rem" }}>
+    <div style={{ width: "100%", marginTop: "-5rem" }}>
       {/* White text area */}
       <div style={{
         background: "#ffffff",
@@ -181,17 +181,10 @@ function IndustryCarousel3D({ ind, images, idx }: { ind: typeof industries[0]; i
     <div
       ref={sceneRef}
       onClick={handleClick}
-      className="cursor-pointer"
-      style={{
-        minHeight: "90vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
-      }}
+      className="cursor-pointer flex items-center justify-center relative min-h-[380px] lg:min-h-[75vh]"
     >
       {/* 3D scene — behind text */}
-      <div ref={perspRef} style={{ perspective: 1000, width: "clamp(220px, 34vw, 440px)", aspectRatio: "2 / 1.5", opacity: 0 }}>
+      <div ref={perspRef} style={{ perspective: 1000, width: "clamp(260px, 40vw, 440px)", aspectRatio: "2 / 1.5", opacity: 0 }}>
         <div
           ref={carouselRef}
           style={{
@@ -217,7 +210,7 @@ function IndustryCarousel3D({ ind, images, idx }: { ind: typeof industries[0]; i
 
       {/* Title — overlaid on top of carousel */}
       <div ref={titleRef} className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ zIndex: 2, opacity: 0 }}>
-        <h2 style={{ ...H_STYLE, fontSize: "clamp(36px, 5.5vw, 72px)", color: "#ffffff", lineHeight: 1.1, textShadow: "0 2px 30px rgba(0,0,0,0.6)" }}>
+        <h2 style={{ ...H_STYLE, fontSize: "clamp(28px, 5.5vw, 72px)", color: "#ffffff", lineHeight: 1.1, textShadow: "0 2px 30px rgba(0,0,0,0.6)" }}>
           <ScrambleText text={ind.label} />
         </h2>
       </div>
@@ -231,14 +224,25 @@ function ScrollCarousel() {
   const imgRef = useRef<HTMLDivElement>(null);
   const mobileImgRef = useRef<HTMLDivElement>(null);
   const [activeImg, setActiveImg] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
-  // Autoplay image carousel — 1s per image
-  useEffect(() => {
-    const iv = setInterval(() => {
+  const resetTimer = useCallback(() => {
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
       setActiveImg((prev) => (prev + 1) % HERO_IMGS.length);
-    }, 1000);
-    return () => clearInterval(iv);
+    }, 4000);
   }, []);
+
+  // Auto-advance slides — 4s per image (matching /for/ hero)
+  useEffect(() => {
+    resetTimer();
+    return () => clearInterval(timerRef.current);
+  }, [resetTimer]);
+
+  const goTo = useCallback((i: number) => { setActiveImg(i); resetTimer(); }, [resetTimer]);
+  const next = useCallback(() => { setActiveImg((p) => (p + 1) % HERO_IMGS.length); resetTimer(); }, [resetTimer]);
+  const prev = useCallback(() => { setActiveImg((p) => (p - 1 + HERO_IMGS.length) % HERO_IMGS.length); resetTimer(); }, [resetTimer]);
+  const swipe = useSwipe(next, prev);
 
   useEffect(() => {
     const el = imgRef.current;
@@ -287,8 +291,35 @@ function ScrollCarousel() {
     return () => obs.disconnect();
   }, []);
 
+  /* Shared pagination dots */
+  const dots = (
+    <div
+      className="absolute bottom-6 right-6 flex items-center gap-[6px] z-10 rounded-full px-2.5 py-2"
+      style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(8px)" }}
+    >
+      {HERO_IMGS.map((_, i) => (
+        <button
+          key={i}
+          onClick={() => goTo(i)}
+          aria-label={`Slide ${i + 1}`}
+          style={{
+            width: i === activeImg ? "28px" : "6px",
+            height: "6px",
+            borderRadius: "3px",
+            background: i === activeImg ? "#f0c93a" : "rgba(255,255,255,0.5)",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+            flexShrink: 0,
+            transition: "width 0.35s cubic-bezier(0.22,1,0.36,1), background 0.35s ease",
+          }}
+        />
+      ))}
+    </div>
+  );
+
   return (
-    <div style={FW}>
+    <div>
       {/* Scroll-to-fullscreen image (desktop only) */}
       <div className="hidden md:flex" style={{
         background: "#0d0d0d",
@@ -306,6 +337,7 @@ function ScrollCarousel() {
             opacity: 0,
             transform: "translateY(40px)",
           }}
+          {...swipe}
         >
           {HERO_IMGS.map((src, i) => (
             // eslint-disable-next-line @next/next/no-img-element
@@ -317,10 +349,11 @@ function ScrollCarousel() {
               loading={i === 0 ? "eager" : "lazy"}
               style={{
                 opacity: activeImg === i ? 1 : 0,
-                transition: "opacity 0.6s ease",
+                transition: "opacity 0.8s ease",
               }}
             />
           ))}
+          {dots}
         </div>
       </div>
 
@@ -331,7 +364,7 @@ function ScrollCarousel() {
         transform: "translateY(40px)",
         transition: "opacity 0.8s ease, transform 0.8s ease",
       }}>
-        <div className="mx-4 overflow-hidden relative" style={{ borderRadius: 16, aspectRatio: "16/9" }}>
+        <div className="mx-4 overflow-hidden relative" style={{ borderRadius: 16, aspectRatio: "16/9" }} {...swipe}>
           {HERO_IMGS.map((src, i) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -342,10 +375,11 @@ function ScrollCarousel() {
               loading={i === 0 ? "eager" : "lazy"}
               style={{
                 opacity: activeImg === i ? 1 : 0,
-                transition: "opacity 0.6s ease",
+                transition: "opacity 0.8s ease",
               }}
             />
           ))}
+          {dots}
         </div>
       </div>
     </div>
@@ -356,11 +390,13 @@ function ScrollCarousel() {
 
 export default function HomePage() {
   const specRef = useRef<HTMLHeadingElement>(null);
+  const headWrapRef = useRef<HTMLDivElement>(null);
   const darkWrapRef = useRef<HTMLDivElement>(null);
   const darkInnerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = specRef.current;
+    const hw = headWrapRef.current;
     const wrap = darkWrapRef.current;
     const inner = darkInnerRef.current;
     if (!el || !wrap || !inner) return;
@@ -377,10 +413,16 @@ export default function HomePage() {
       // Dark section mask: starts tight & rounded, expands to full bleed
       const wRect = wrap.getBoundingClientRect();
       const p = Math.max(0, Math.min(1, (vh - wRect.top) / (vh * 0.5)));
-      const pad = (1 - p) * 200;
+      const maxPad = Math.min(200, (window.innerWidth - 40) / 2);
+      const pad = (1 - p) * maxPad;
       const rad = (1 - p) * 40;
       wrap.style.padding = `0 ${pad}px`;
       inner.style.borderRadius = `${rad}px ${rad}px 0 0`;
+      // Counteract padding so heading stays centred in the viewport
+      if (hw) {
+        hw.style.marginLeft = `-${pad}px`;
+        hw.style.marginRight = `-${pad}px`;
+      }
 
       raf = requestAnimationFrame(tick);
     };
@@ -391,15 +433,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col pt-20">
 
-      {/* Shared SVG filter + keyframes */}
-      <svg width="0" height="0" style={{ position: "absolute" }}>
-        <defs>
-          <filter id="nas-rough" x="-8%" y="-30%" width="116%" height="160%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="8" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-      </svg>
+      {/* Keyframes for homepage animations */}
       <style>{`
         @keyframes nas-up      { from { opacity:0; transform:translateY(18px) } to { opacity:1; transform:translateY(0) } }
         @keyframes nas-slide   { from { transform:translateX(-108%) } to { transform:translateX(0) } }
@@ -407,23 +441,23 @@ export default function HomePage() {
       `}</style>
 
       {/* Hero — Mode 3 */}
-      <div className="relative z-10 w-full max-w-3xl mx-auto px-6">
-        <HeroCentered />
-      </div>
+      <HeroCentered />
 
       <StaggeredGridSection />
 
       {/* 3D Industry Carousels — vertically stacked, scroll-driven */}
-      <div ref={darkWrapRef} className="relative z-10 w-full" style={FW}>
-      <div ref={darkInnerRef} className="w-full" style={{ background: "#0d0d0d", overflow: "hidden" }}>
-        <div style={{ padding: "clamp(80px, 12vw, 160px) 24px 0" }}>
-          <h2 ref={specRef} className="text-center" style={{ ...H_STYLE, fontSize: "clamp(32px, 4.5vw, 60px)", color: "#ffffff", lineHeight: 1.1, opacity: 0 }}>
+      <div ref={darkWrapRef} className="relative z-10 w-full">
+      <div ref={darkInnerRef} className="w-full" style={{ background: "#0d0d0d" }}>
+        <div ref={headWrapRef} style={{ padding: "clamp(48px, 12vw, 160px) 0 0", textAlign: "center" }}>
+          <h2 ref={specRef} style={{ ...H_STYLE, fontSize: "clamp(24px, 4.5vw, 60px)", color: "#ffffff", lineHeight: 1.1, opacity: 0, whiteSpace: "nowrap" }}>
             We specialise in
           </h2>
         </div>
-        {industries.map((ind, idx) => (
-          <IndustryCarousel3D key={ind.slug} ind={ind} images={industryImages[ind.slug]} idx={idx} />
-        ))}
+        <div style={{ overflow: "clip" }}>
+          {industries.map((ind, idx) => (
+            <IndustryCarousel3D key={ind.slug} ind={ind} images={industryImages[ind.slug]} idx={idx} />
+          ))}
+        </div>
       </div>
       </div>
 

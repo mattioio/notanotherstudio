@@ -13,8 +13,6 @@ export default function Nav() {
   const pathname = usePathname();
   const ctaHref = pathname === "/" ? "#contact" : "/for/commercial-properties#contact";
   const [forOpen, setForOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const [slideUp, setSlideUp] = useState(0);
   const [animDone, setAnimDone] = useState(false);
   const [onDark, setOnDark] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -31,7 +29,9 @@ export default function Nav() {
   useEffect(() => {
     let raf = 0;
     const check = () => {
-      const navY = 48; // approx vertical centre of nav
+      const rect = headerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const navY = rect.top + rect.height / 2;
       const x = window.innerWidth / 2;
       const els = document.elementsFromPoint(x, navY);
       let dark = false;
@@ -74,8 +74,9 @@ export default function Nav() {
   // Hide nav after scrolling past hero on /for/ pages, or when footer/contact is reached
   useEffect(() => {
     // Reset visibility on route change so nav is always visible at top of new page
-    setHidden(false);
-    setSlideUp(0);
+    if (headerRef.current) {
+      headerRef.current.style.transform = "translateY(0)";
+    }
 
     const NAV_TOP = 20; // matches top-5
 
@@ -102,8 +103,23 @@ export default function Nav() {
         if (top < window.innerHeight * 0.5) hide = true;
       }
 
-      setSlideUp(slide);
-      setHidden(hide);
+      // Direct DOM write for scroll-sync (bypasses React re-render lag)
+      const el = headerRef.current;
+      if (el) {
+        if (hide) {
+          el.style.transform = "translateY(-120%)";
+          el.style.opacity = "0";
+          el.style.transition = "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease";
+        } else if (slide > 0) {
+          el.style.transform = `translateY(-${slide}px)`;
+          el.style.opacity = "1";
+          el.style.transition = "opacity 0.3s ease"; // no transform transition during scroll-sync
+        } else {
+          el.style.transform = "translateY(0)";
+          el.style.opacity = "1";
+          el.style.transition = "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease";
+        }
+      }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     // Delay initial check to let the new page DOM settle
@@ -117,15 +133,6 @@ export default function Nav() {
       className="fixed top-5 left-6 right-6 z-50 flex flex-col items-center pointer-events-none"
       style={{
         animation: animDone ? undefined : "nav-in 0.6s cubic-bezier(0.22,1,0.36,1) 0.3s both",
-        transform: animDone
-          ? (hidden ? "translateY(-120%)" : `translateY(-${slideUp}px)`)
-          : undefined,
-        opacity: animDone ? (hidden ? 0 : 1) : undefined,
-        transition: animDone
-          ? (slideUp > 0
-            ? "opacity 0.3s ease"
-            : "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease")
-          : undefined,
       }}
     >
       <style>{`
@@ -189,7 +196,8 @@ export default function Nav() {
               letterSpacing: "var(--heading-tracking)",
             }}
           >
-            Not Another Studio
+            <span className="hidden md:inline">Not Another Studio</span>
+            <span className="md:hidden">N/A Studio</span>
           </a>
         </div>
 
@@ -317,15 +325,8 @@ export default function Nav() {
           >
             Home
           </a>
-          <div
-            className="my-2"
-            style={{
-              height: 1,
-              background: onDark ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.08)",
-            }}
-          />
           <p
-            className="text-[10px] font-bold tracking-[0.12em] uppercase mb-1 mt-1"
+            className="text-[10px] font-bold tracking-[0.12em] uppercase mb-1 mt-4"
             style={{ color: onDark ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.3)" }}
           >
             Services
