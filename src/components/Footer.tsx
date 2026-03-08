@@ -133,14 +133,6 @@ export function FooterCompass() {
   );
 }
 
-const sectionLinks = [
-  { label: "Services",   href: "/for/commercial-properties#services" },
-  { label: "Our Work",   href: "/for/commercial-properties#work"     },
-  { label: "Packages",   href: "/for/commercial-properties#packages" },
-  { label: "Process",    href: "/for/commercial-properties#process"  },
-  { label: "Contact us", href: "/for/commercial-properties#contact"  },
-];
-
 // ── Homepage footer — contact form + minimal bottom bar ───────────────────
 
 function HomeFooter() {
@@ -217,7 +209,7 @@ function StandardFooter() {
           opacity: 0.2,
         }}
       />
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-5 pb-6 border-b border-white/8">
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-5">
         <a href="/" className="text-white no-underline leading-none" style={{
           fontSize: "1.25rem",
           fontFamily:    "var(--heading-font)",
@@ -226,18 +218,10 @@ function StandardFooter() {
         }}>
           Not Another Studio
         </a>
-        <nav className="flex flex-wrap gap-7">
-          {sectionLinks.map(({ label, href }) => (
-            <a key={href} href={href}
-              className="text-[13px] text-white/50 hover:text-white transition-colors no-underline">
-              {label}
-            </a>
-          ))}
-        </nav>
+        <p className="text-xs text-white/30">
+          &copy; {new Date().getFullYear()} Not Another Studio LTD
+        </p>
       </div>
-      <p className="relative z-10 text-xs text-white/30 mt-5">
-        &copy; {new Date().getFullYear()} Not Another Studio LTD
-      </p>
     </footer>
   );
 }

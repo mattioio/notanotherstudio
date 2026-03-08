@@ -11,7 +11,7 @@ const FOR_LINKS = [
 
 export default function Nav() {
   const pathname = usePathname();
-  const ctaHref = pathname === "/" ? "#contact" : "/for/commercial-properties#contact";
+  const ctaHref = "#contact";
   const [forOpen, setForOpen] = useState(false);
   const [animDone, setAnimDone] = useState(false);
   const [onDark, setOnDark] = useState(false);
@@ -96,11 +96,13 @@ export default function Nav() {
         }
       }
 
-      // On all pages: hide when contact/footer section is on screen
-      const contact = document.getElementById("contact");
-      if (contact) {
-        const top = contact.getBoundingClientRect().top;
-        if (top < window.innerHeight * 0.5) hide = true;
+      // On /for/ pages: hide when contact section is on screen
+      if (pathname.startsWith("/for")) {
+        const contact = document.getElementById("contact");
+        if (contact) {
+          const top = contact.getBoundingClientRect().top;
+          if (top < window.innerHeight * 0.5) hide = true;
+        }
       }
 
       // Direct DOM write for scroll-sync (bypasses React re-render lag)
@@ -226,7 +228,7 @@ export default function Nav() {
 
             {forOpen && (
               <div
-                className="absolute top-full left-1/2 mt-5 rounded-2xl py-3 px-1 backdrop-blur-xl"
+                className="absolute top-full left-1/2 mt-5 rounded-2xl py-3 px-1 backdrop-blur-xl flex flex-col gap-1"
                 style={{
                   transform: "translateX(-50%)",
                   background: onDark ? "rgba(255,255,255,0.92)" : "rgba(13,13,13,0.96)",
@@ -291,6 +293,10 @@ export default function Nav() {
         {/* CTA */}
         <a
           href={ctaHref}
+          onClick={(e) => {
+            const el = document.getElementById("contact");
+            if (el) { e.preventDefault(); el.scrollIntoView(); }
+          }}
           className="inline-flex items-center rounded-full px-5 py-2 font-bold text-[11px] lg:text-[12px] tracking-[0.02em] no-underline transition-all duration-400 hover:scale-105 hover:brightness-110"
           style={{ background: onDark ? "#0d0d0d" : "#f0c93a", color: onDark ? "#f5f3ef" : "#0d0d0d" }}
         >

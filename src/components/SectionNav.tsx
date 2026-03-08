@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 const sectionLinks = [
-  { key: "services", label: "Services" },
+  { key: "services", label: "What we do" },
   { key: "work",     label: "Our Work" },
   { key: "packages", label: "Packages" },
   { key: "process",  label: "Process"  },
@@ -18,6 +18,37 @@ export default function SectionNav() {
   const [activeSection, setActiveSection] = useState<string>("");
   const [slideUp, setSlideUp] = useState(0);
   const [hidden, setHidden] = useState(false);
+
+  // Refs for measuring pill positions
+  const navRef = useRef<HTMLElement>(null);
+  const linkRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
+  const pillRef = useRef<HTMLDivElement>(null);
+
+  const setLinkRef = useCallback((key: string, el: HTMLAnchorElement | null) => {
+    if (el) linkRefs.current.set(key, el);
+    else linkRefs.current.delete(key);
+  }, []);
+
+  // Sliding pill position update
+  useEffect(() => {
+    const pill = pillRef.current;
+    const nav = navRef.current;
+    if (!pill || !nav) return;
+
+    const activeLink = linkRefs.current.get(activeSection);
+    if (!activeLink) {
+      pill.style.opacity = "0";
+      return;
+    }
+
+    const navRect = nav.getBoundingClientRect();
+    const linkRect = activeLink.getBoundingClientRect();
+
+    pill.style.opacity = "1";
+    pill.style.left = `${linkRect.left - navRect.left}px`;
+    pill.style.width = `${linkRect.width}px`;
+    pill.style.height = `${linkRect.height}px`;
+  }, [activeSection]);
 
   useEffect(() => {
     const sectionEls = sectionLinks
@@ -68,15 +99,33 @@ export default function SectionNav() {
           transition: "opacity 0.3s ease",
         }}
       >
-        <nav className="inline-flex items-center gap-0.5 md:gap-1 bg-white/70 backdrop-blur-xl rounded-full px-1 md:px-1.5 py-1.5 shadow-[0_4px_30px_rgba(0,0,0,0.10)] border border-white/50">
+        <nav
+          ref={navRef}
+          className="relative inline-flex items-center gap-0.5 md:gap-1 bg-white/70 backdrop-blur-xl rounded-full px-1 md:px-1.5 py-1.5 shadow-[0_4px_30px_rgba(0,0,0,0.10)] border border-white/50"
+        >
+          {/* Sliding pill indicator */}
+          <div
+            ref={pillRef}
+            className="absolute rounded-full bg-[#0d0d0d]"
+            style={{
+              top: "50%",
+              transform: "translateY(-50%)",
+              transition: "left 0.4s cubic-bezier(0.22, 1, 0.36, 1), width 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease",
+              opacity: 0,
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          />
+
           {sectionLinks.map(({ key, label }) => (
             <a
               key={key}
+              ref={(el) => setLinkRef(key, el)}
               href={`#${key}`}
-              className={`px-3 md:px-5 py-1.5 md:py-2 text-[11px] md:text-[13px] font-medium no-underline rounded-full transition-all duration-200 ${
+              className={`relative z-10 px-3 md:px-5 py-1.5 md:py-2 text-[11px] md:text-[13px] font-medium no-underline rounded-full transition-colors duration-300 ${
                 activeSection === key
-                  ? "bg-[#0d0d0d] text-white"
-                  : "text-[#555] hover:text-[#0d0d0d] hover:bg-black/5"
+                  ? "text-white"
+                  : "text-[#555] hover:text-[#0d0d0d]"
               }`}
             >
               {label}

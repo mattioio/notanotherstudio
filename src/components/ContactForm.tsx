@@ -1,6 +1,6 @@
 "use client";
 
-import { useContactForm, contactChips } from "@/hooks/useContactForm";
+import { useContactForm } from "@/hooks/useContactForm";
 
 interface ContactFormProps {
   className?: string;
@@ -66,31 +66,6 @@ export default function ContactForm({
         />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-white/40">
-          I&apos;m interested in
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {contactChips.map(({ label, value }) => {
-            const isSelected = selected.includes(value);
-            return (
-              <button
-                key={value}
-                type="button"
-                onClick={() => toggleChip(value)}
-                className={`px-4 py-2 text-[13px] font-medium border rounded-full transition-all cursor-pointer ${
-                  isSelected
-                    ? "bg-[#f0c93a] border-[#f0c93a] text-[#0d0d0d] font-bold"
-                    : "bg-white/8 backdrop-blur-xl border-white/18 text-white/60 hover:border-white/50 hover:text-white"
-                }`}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       <div className="flex flex-col gap-1.5">
         <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-white/40">
           Tell us about your project
@@ -98,6 +73,7 @@ export default function ContactForm({
         <textarea
           name="message"
           placeholder={textareaPlaceholder}
+          required
           rows={4}
           className="bg-white/8 backdrop-blur-xl border border-white/12 rounded-xl text-white px-4 py-3.5 text-[15px] font-light outline-none focus:border-[#f0c93a] transition-colors resize-y placeholder:text-white/20"
         />

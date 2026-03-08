@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { PackagesConfig } from "@/components/PackagesSection";
 import IndustryPageTemplate from "@/components/IndustryPageTemplate";
 
 export const metadata: Metadata = {
@@ -6,50 +7,167 @@ export const metadata: Metadata = {
 };
 
 const marqueeItems = [
-  "UX Design", "Product Design", "App Interfaces", "Design Systems",
+  "UX Design", "Product Design", "App Interfaces", "Pitch Decks",
   "User Research", "Prototyping", "Brand Identity", "Digital Products",
-  "UX Design", "Product Design", "App Interfaces", "Design Systems",
+  "UX Design", "Product Design", "App Interfaces", "Pitch Decks",
   "User Research", "Prototyping", "Brand Identity", "Digital Products",
 ];
 
 const services = [
   {
-    slug: "ux",
+    slug: "uiux",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
         <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
       </svg>
     ),
-    name: "UX & Interface",
+    name: "UI & UX",
     desc: "Custom app and product interfaces built from real user research. Every screen designed to convert, retain and delight.",
-    from: "£2,000+",
-    features: ["UX research & mapping", "Interface design", "Interactive prototypes", "Handoff-ready files"],
+    from: "£800+",
+    features: ["UX audits", "Interface design", "Design systems", "Developer handoff"],
   },
   {
-    slug: "systems",
+    slug: "pitch",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
-        <rect x="2" y="2" width="8" height="8"/><rect x="14" y="2" width="8" height="8"/><rect x="2" y="14" width="8" height="8"/><rect x="14" y="14" width="8" height="8"/>
+        <rect x="2" y="2" width="20" height="20" rx="0"/><path d="M2 8h20M8 2v20"/>
       </svg>
     ),
-    name: "Design Systems",
-    desc: "Scalable component libraries and design tokens that keep your product consistent, on-brand and easy to build on as you grow.",
-    from: "£3,000+",
-    features: ["Component library", "Design tokens", "Documentation", "Dev handoff"],
+    name: "Pitch Decks",
+    desc: "Investor-ready decks designed to close rounds. Clear narrative, sharp data visualisation and professional layouts.",
+    from: "£500+",
+    features: ["Startup decks", "Investor presentations", "One-pagers", "Leave-behinds"],
   },
   {
-    slug: "brand",
+    slug: "marketing",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        <rect x="2" y="3" width="20" height="14" rx="0"/><path d="M8 21h8M12 17v4"/>
       </svg>
     ),
-    name: "Brand & Identity",
-    desc: "Distinctive branding for products that need to stand out in crowded markets. Logo, guidelines and a full asset kit.",
-    from: "£1,500+",
-    features: ["Logo design", "Brand guidelines", "Digital asset kit", "Refresh options"],
+    name: "Marketing Material",
+    desc: "Web, social and email assets that drive signups and build momentum — from launch campaigns to ongoing content.",
+    from: "£400+",
+    features: ["Landing pages", "Social templates", "Email campaigns", "Sales collateral"],
   },
 ];
+
+const packages: PackagesConfig = {
+  heading: "Packages built for product teams",
+  subheading: "Fixed prices. Fast turnarounds. No account managers, no bloated agency markup. Just great work delivered by people who understand your product.",
+  tabs: [
+    {
+      key: "uiux",
+      label: "UI & UX",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+        </svg>
+      ),
+      tiers: [
+        {
+          key: "ux-audit",
+          name: "UX Audit",
+          price: "£800+",
+          desc: "A focused review of your existing product — identifying friction points, quick wins and UX improvements.",
+          note: "Delivered as a prioritised report with actionable recommendations.",
+          features: ["Heuristic usability review", "User flow analysis", "Competitor benchmarking", "Prioritised recommendations report", "30-min walkthrough call", "Quick-win implementation notes"],
+          visibleFeatureCount: 3,
+        },
+        {
+          key: "ui-design",
+          name: "Full UI/UX Design",
+          price: "£2,500+",
+          desc: "End-to-end design for a product, app or feature — from user research through to developer handoff.",
+          note: "Includes all source files, prototypes and handoff documentation.",
+          features: ["User research & journey mapping", "Wireframes & information architecture", "High-fidelity interface design", "Interactive prototype", "Developer handoff (Figma)", "2 rounds of revisions", "30-day post-handoff support"],
+          visibleFeatureCount: 4,
+        },
+      ],
+    },
+    {
+      key: "pitch",
+      label: "Pitch Decks",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <rect x="2" y="2" width="14" height="14" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+          <line x1="2" y1="6" x2="16" y2="6" stroke="currentColor" strokeWidth="1.5"/>
+          <line x1="6" y1="2" x2="6" y2="16" stroke="currentColor" strokeWidth="1.5"/>
+        </svg>
+      ),
+      tiers: [
+        {
+          key: "pitch-starter",
+          name: "Startup Deck",
+          price: "£500+",
+          desc: "A clean, investor-ready pitch deck up to 15 slides — perfect for early-stage fundraising.",
+          note: "Delivered as editable Keynote/PowerPoint + PDF.",
+          features: ["Custom slides", "Narrative structure & flow", "Data visualisation", "Editable source file", "PDF export for sharing", "1 round of revisions"],
+          visibleFeatureCount: 3,
+        },
+        {
+          key: "pitch-investor",
+          name: "Investor Deck",
+          price: "£1,200+",
+          desc: "A full narrative deck with financial layouts, data viz and appendix — designed to close rounds.",
+          note: "Keynote/PowerPoint + PDF + one-pager.",
+          features: ["Up to 30 custom slides", "Financial model visualisation", "Market sizing & competitive slides", "Appendix section", "Matching one-pager (PDF)", "Editable source files", "2 rounds of revisions"],
+          visibleFeatureCount: 4,
+        },
+        {
+          key: "pitch-suite",
+          name: "Full Pitch Suite",
+          price: "£2,000+",
+          desc: "Everything investors need: deck, one-pager, executive summary and leave-behind — all on-brand.",
+          note: "Complete fundraising collateral set.",
+          features: ["Everything in Investor Deck", "Executive summary document", "Branded leave-behind PDF", "Teaser deck (5-slide version)", "Print-ready versions", "3 rounds of revisions", "Template for future updates"],
+          visibleFeatureCount: 4,
+        },
+      ],
+    },
+    {
+      key: "marketing",
+      label: "Marketing Material",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <rect x="1" y="3" width="16" height="12" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+          <line x1="1" y1="7" x2="17" y2="7" stroke="currentColor" strokeWidth="1.5"/>
+          <circle cx="3.5" cy="5" r="0.8" fill="currentColor"/>
+          <circle cx="6" cy="5" r="0.8" fill="currentColor"/>
+        </svg>
+      ),
+      tiers: [
+        {
+          key: "marketing-social",
+          name: "Social Kit",
+          price: "£400+",
+          desc: "Branded templates for Instagram, LinkedIn, Twitter and more — ready to use across all major platforms.",
+          note: "Editable templates in Figma or Canva.",
+          features: ["Platform-specific templates", "Story & post formats", "Brand-consistent layouts", "Editable source files", "Asset export guide", "1 round of revisions"],
+          visibleFeatureCount: 3,
+        },
+        {
+          key: "marketing-web",
+          name: "Web & Social Pack",
+          price: "£1,000+",
+          desc: "A landing page plus social media template suite — everything you need for a product launch or campaign.",
+          note: "One-off project fee. Hosting from £40/mo.",
+          features: ["Custom landing page design & build", "Social media template suite", "Email announcement template", "Open Graph & meta images", "Hosting setup included", "2 rounds of revisions"],
+          visibleFeatureCount: 4,
+        },
+        {
+          key: "marketing-full",
+          name: "Full Marketing Suite",
+          price: "£2,000+",
+          desc: "Complete marketing collateral: website, social assets, email templates and sales materials — all on-brand.",
+          note: "One-off project fee. Hosting from £40/mo.",
+          features: ["Everything in Web & Social Pack", "Email campaign templates", "Sales deck / case study template", "Blog post header templates", "Brand asset library", "3 rounds of revisions", "30-day post-launch support"],
+          visibleFeatureCount: 4,
+        },
+      ],
+    },
+  ],
+};
 
 const steps = [
   { num: "01", title: "Discovery & Research", body: "We learn about your product, your users and your goals. We map user journeys and identify the problems worth solving." },
@@ -71,14 +189,14 @@ const workProjects = [
     client: "Orchid ID",
     location: "UK",
     services: ["UI Design", "UX Design"],
-    images: ["/images/product-design/work-orchid1.jpg", "/images/product-design/work-orchid2.jpg"],
+    images: ["/images/product-design/work-orchidid1.jpg", "/images/product-design/work-orchidid2.jpg"],
   },
   {
     num: "03",
     client: "104 Impact",
     location: "UK",
     services: ["Brand", "Presentation"],
-    images: ["/images/product-design/work-striing1.jpg", "/images/product-design/work-striing2.jpg"],
+    images: ["/images/product-design/work-1041.jpg", "/images/product-design/work-1042.jpg"],
   },
   {
     num: "04",
@@ -90,7 +208,7 @@ const workProjects = [
   {
     num: "05",
     client: "Your project here",
-    location: "We have space for one new client",
+    location: "",
     services: [],
     images: ["/images/work-yourproject.jpeg"],
   },
@@ -112,7 +230,9 @@ export default function ProductDesignPage() {
       }}
       marqueeItems={marqueeItems}
       services={services}
+      servicesHeading="Design, pitch and promote — all in one place"
       workProjects={workProjects}
+      packages={packages}
       steps={steps}
       process={{
         heading: "Research first. Then design.",
