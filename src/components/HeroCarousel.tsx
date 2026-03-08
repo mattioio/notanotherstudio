@@ -8,10 +8,10 @@ interface HeroCarouselProps {
 }
 
 const defaultImages = [
-  "/images/commercial-property/banner1.jpeg",
-  "/images/commercial-property/banner2.jpeg",
-  "/images/commercial-property/banner3.jpeg",
-  "/images/commercial-property/banner4.jpeg",
+  "/images/commercial-property/banner1.jpg",
+  "/images/commercial-property/banner2.jpg",
+  "/images/commercial-property/banner3.jpg",
+  "/images/commercial-property/banner4.jpg",
 ];
 
 export default function HeroCarousel({ images = defaultImages }: HeroCarouselProps) {
@@ -63,7 +63,7 @@ export default function HeroCarousel({ images = defaultImages }: HeroCarouselPro
       const mx = smooth.current.x - 0.5;
       const my = smooth.current.y - 0.5;
       if (innerRef.current) {
-        innerRef.current.style.transform = `translate(${mx * -24}px, ${my * -18}px)`;
+        innerRef.current.style.transform = `translate(${mx * -10}px, ${my * -8}px)`;
       }
       raf = requestAnimationFrame(tick);
     };
@@ -89,9 +89,9 @@ export default function HeroCarousel({ images = defaultImages }: HeroCarouselPro
         ref={innerRef}
         className="absolute"
         style={{
-          inset: "-7.5%",
-          width: "115%",
-          height: "115%",
+          inset: "-3%",
+          width: "106%",
+          height: "106%",
           willChange: "transform",
         }}
       >
@@ -109,7 +109,7 @@ export default function HeroCarousel({ images = defaultImages }: HeroCarouselPro
 
       {/* Slide indicators */}
       <div
-        className="absolute bottom-6 right-6 flex items-center gap-[6px] z-10 rounded-full px-2.5 py-2"
+        className="absolute bottom-12 md:bottom-6 right-6 flex items-center gap-[6px] z-10 rounded-full px-2.5 py-2"
         style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(8px)" }}
       >
         {images.map((_, i) => (

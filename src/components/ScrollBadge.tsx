@@ -42,15 +42,19 @@ export default function ScrollBadge() {
   return (
     <div
       ref={ref}
-      className="relative z-10 w-[200px] h-[200px] bg-[#0d0d0d] flex flex-col items-center justify-center text-center text-white"
+      className="relative z-10 w-[200px] rounded-2xl overflow-hidden shadow-lg"
       style={{
         ...style,
         transition: "opacity 0.4s ease",
         willChange: "transform",
       }}
     >
-      <span className="syne text-[48px] leading-none text-[#f0c93a]">2–6</span>
-      <span className="text-[11px] font-bold tracking-[0.1em] uppercase mt-1">Weeks to launch</span>
+      {/* Calendar header strip */}
+      <div className="bg-[#f0c93a] h-3" />
+      <div className="bg-[#0d0d0d] flex flex-col items-center justify-center text-center text-white py-12 px-6">
+        <span className="syne text-[48px] leading-none text-[#f0c93a]">2–6</span>
+        <span className="text-[11px] font-bold tracking-[0.1em] uppercase mt-2">Weeks to launch</span>
+      </div>
     </div>
   );
 }

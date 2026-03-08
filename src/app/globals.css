@@ -14,7 +14,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   overflow-x: hidden;
 }
 
@@ -70,6 +69,22 @@ body {
 }
 .eyebrow::before {
   display: none;
+}
+
+/* Hero panel slide-in on load (desktop only) */
+@keyframes hero-slide-in-left {
+  from { opacity: 0; transform: translateX(-100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+/* Mobile: no animation — card sits statically below hero */
+.hero-panel-enter {
+  /* no-op on mobile */
+}
+/* Desktop: slide in from left */
+@media (min-width: 768px) {
+  .hero-panel-enter {
+    animation: hero-slide-in-left 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  }
 }
 
 /* Fade-up scroll animations */

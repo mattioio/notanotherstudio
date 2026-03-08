@@ -179,26 +179,20 @@ export default function WorkSection({ projects }: WorkSectionProps) {
                   </div>
                   <div className="flex items-center gap-3 mt-2 flex-wrap">
                     {services.length > 0 ? (
-                      <>
-                        <span className="text-[11px] text-white/30 font-medium tracking-widest uppercase">
-                          {location}
+                      services.map((s) => (
+                        <span
+                          key={s}
+                          className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 transition-all duration-300"
+                          style={{
+                            background: active === i ? "rgba(240,201,58,0.15)" : "rgba(255,255,255,0.06)",
+                            color: active === i ? "#f0c93a" : "rgba(255,255,255,0.3)",
+                          }}
+                        >
+                          {s}
                         </span>
-                        <span className="text-white/15">·</span>
-                        {services.map((s) => (
-                          <span
-                            key={s}
-                            className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 transition-all duration-300"
-                            style={{
-                              background: active === i ? "rgba(240,201,58,0.15)" : "rgba(255,255,255,0.06)",
-                              color: active === i ? "#f0c93a" : "rgba(255,255,255,0.3)",
-                            }}
-                          >
-                            {s}
-                          </span>
-                        ))}
-                      </>
+                      ))
                     ) : (
-                      <span className="text-[11px] text-white/30 font-medium tracking-widest uppercase">
+                      <span className="text-[11px] text-white/30 font-medium tracking-wide">
                         {location}
                       </span>
                     )}
@@ -225,7 +219,10 @@ export default function WorkSection({ projects }: WorkSectionProps) {
               {/* Mobile: expandable image */}
               <div
                 className="lg:hidden relative overflow-hidden"
-                style={{ height: active === i ? "220px" : "0", transition: "height 0.4s ease" }}
+                style={{
+                  height: active === i ? "calc((100vw - 48px) * 4 / 5)" : "0",
+                  transition: "height 0.4s ease",
+                }}
                 {...(active === i ? swipe : {})}
               >
                 {images.map((src, idx) => (
@@ -264,20 +261,19 @@ export default function WorkSection({ projects }: WorkSectionProps) {
           ))}
         </div>
 
-        {/* Right: sticky full-height image panel */}
+        {/* Right: sticky image panel — sized to 5:4 images */}
         <div
           className="hidden lg:block lg:w-[52%] sticky top-[72px]"
-          style={{ height: "calc(100vh - 72px)" }}
         >
-          <div className="relative w-full h-full overflow-hidden" {...swipe}>
+          <div className="relative w-full overflow-hidden" style={{ aspectRatio: "5 / 4" }} {...swipe}>
             {/* Oversized inner container for Window panning */}
             <div
               ref={windowRef}
               className="absolute"
               style={{
-                inset: "-7.5%",
-                width: "115%",
-                height: "115%",
+                inset: "-3%",
+                width: "106%",
+                height: "106%",
                 willChange: "transform",
               }}
             >

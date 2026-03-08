@@ -9,7 +9,7 @@ import { useSwipe } from "@/hooks/useSwipe";
 
 const industryImages: Record<string, string[]> = {
   "product-design":        ["/images/product-design/banner1.jpg", "/images/product-design/banner2.jpg", "/images/product-design/banner3.jpg", "/images/product-design/banner4.jpg"],
-  "commercial-properties": ["/images/commercial-property/banner1.jpeg", "/images/commercial-property/banner2.jpeg", "/images/commercial-property/banner3.jpeg", "/images/commercial-property/banner4.jpeg"],
+  "commercial-properties": ["/images/commercial-property/banner1.jpg", "/images/commercial-property/banner2.jpg", "/images/commercial-property/banner3.jpg", "/images/commercial-property/banner4.jpg"],
   "food-hospitality":      ["/images/food/banner1.jpg", "/images/food/banner2.jpg", "/images/food/banner3.jpg"],
 };
 
@@ -124,47 +124,87 @@ function IndustryCarousel3D({ ind, images, idx }: { ind: typeof industries[0]; i
   const carouselRef = useRef<HTMLDivElement>(null);
   const perspRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
+  const fsRef = useRef<HTMLDivElement>(null);
   const exitRef = useRef(false);
-  const extraRotRef = useRef(0);
-  const extraSpeedRef = useRef(0);
+  const exitStartRef = useRef(0);
 
   const R = 420;
   const angleStep = 360 / images.length;
-  // Each carousel starts showing face 0 when entering viewport,
-  // with slight stagger so they don't all look identical
   const startOffset = idx * 15;
+
+  // Timings (seconds)
+  const SPIN_DUR = 0.7;
+  const SPIN_DEGS = 540; // 1.5 rotations
+  const EXPAND_START = 0.55;
+  const EXPAND_DUR = 0.5;
+  const NAV_AT = 1100; // ms
 
   useEffect(() => {
     const scene = sceneRef.current;
     const el = carouselRef.current;
     const persp = perspRef.current;
     const title = titleRef.current;
-    if (!scene || !el || !persp || !title) return;
+    const fs = fsRef.current;
+    if (!scene || !el || !persp || !title || !fs) return;
     let raf: number;
 
     const tick = () => {
       const rect = scene.getBoundingClientRect();
       const viewH = window.innerHeight;
-      // 0 = scene top at viewport bottom, 1 = scene bottom at viewport top
       const progress = Math.max(0, Math.min(1, (viewH - rect.top) / (viewH + rect.height)));
       const baseAngle = startOffset + progress * -180;
 
-      // Title fades in first (0–15% of progress)
       const fadeInTitle = Math.min(1, progress / 0.15);
-      // Images fade in much later (30–55% of progress), giving time to read the title
       const fadeInImages = Math.max(0, Math.min(1, (progress - 0.3) / 0.25));
-      // Both fade out as carousel exits viewport (last 15% of progress)
       const fadeOut = Math.min(1, (1 - progress) / 0.15);
 
-      title.style.opacity = `${Math.min(fadeInTitle, fadeOut)}`;
-      persp.style.opacity = `${Math.min(fadeInImages, fadeOut)}`;
-
       if (exitRef.current) {
-        extraSpeedRef.current = Math.min(extraSpeedRef.current + 0.5, 16);
-        extraRotRef.current += extraSpeedRef.current;
+        const elapsed = (performance.now() - exitStartRef.current) / 1000;
+
+        // ── Phase 1: Spin 1.5 rotations with deceleration ──
+        const spinT = Math.min(1, elapsed / SPIN_DUR);
+        const spinEase = 1 - Math.pow(1 - spinT, 3); // easeOutCubic
+        const extraRot = spinEase * SPIN_DEGS;
+
+        el.style.transform = `translateZ(${-R}px) rotateY(${baseAngle - extraRot}deg)`;
+
+        // Title fades out fast
+        title.style.opacity = `${Math.max(0, 1 - spinT * 3)}`;
+
+        // Carousel fades out as expand takes over
+        if (elapsed > EXPAND_START) {
+          const fadeT = (elapsed - EXPAND_START) / EXPAND_DUR;
+          persp.style.opacity = `${Math.max(0, 1 - fadeT * 1.5)}`;
+        }
+
+        // ── Phase 2: Image expands from carousel centre to fullscreen ──
+        if (elapsed > EXPAND_START) {
+          const expandT = Math.min(1, (elapsed - EXPAND_START) / EXPAND_DUR);
+          const expandEase = 1 - Math.pow(1 - expandT, 3); // easeOutCubic
+
+          // Position overlay to cover viewport
+          const sceneRect = scene.getBoundingClientRect();
+          const vpW = window.innerWidth;
+          const vpH = window.innerHeight;
+          fs.style.left = `${-sceneRect.left}px`;
+          fs.style.top = `${-sceneRect.top}px`;
+          fs.style.width = `${vpW}px`;
+          fs.style.height = `${vpH}px`;
+
+          // Scale origin = carousel centre relative to the overlay
+          const cx = sceneRect.left + sceneRect.width / 2;
+          const cy = sceneRect.top + sceneRect.height / 2;
+          fs.style.transformOrigin = `${cx}px ${cy}px`;
+
+          fs.style.opacity = `${Math.min(1, expandEase * 1.8)}`;
+          fs.style.transform = `scale(${0.1 + expandEase * 0.9})`;
+        }
+      } else {
+        title.style.opacity = `${Math.min(fadeInTitle, fadeOut)}`;
+        persp.style.opacity = `${Math.min(fadeInImages, fadeOut)}`;
+        el.style.transform = `translateZ(${-R}px) rotateY(${baseAngle}deg)`;
       }
 
-      el.style.transform = `translateZ(${-R}px) rotateY(${baseAngle + extraRotRef.current}deg)`;
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
@@ -174,7 +214,8 @@ function IndustryCarousel3D({ ind, images, idx }: { ind: typeof industries[0]; i
   const handleClick = () => {
     if (exitRef.current) return;
     exitRef.current = true;
-    setTimeout(() => { window.location.href = `/for/${ind.slug}`; }, 700);
+    exitStartRef.current = performance.now();
+    setTimeout(() => { window.location.href = `/for/${ind.slug}`; }, NAV_AT);
   };
 
   return (
@@ -213,6 +254,16 @@ function IndustryCarousel3D({ ind, images, idx }: { ind: typeof industries[0]; i
         <h2 style={{ ...H_STYLE, fontSize: "clamp(28px, 5.5vw, 72px)", color: "#ffffff", lineHeight: 1.1, textShadow: "0 2px 30px rgba(0,0,0,0.6)" }}>
           <ScrambleText text={ind.label} />
         </h2>
+      </div>
+
+      {/* Fullscreen image — expands from carousel centre to cover viewport on click */}
+      <div
+        ref={fsRef}
+        className="absolute pointer-events-none"
+        style={{ zIndex: 10, opacity: 0, transform: "scale(0.1)", willChange: "transform, opacity" }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={images[0]} alt={ind.label} className="w-full h-full object-cover" />
       </div>
     </div>
   );
@@ -453,7 +504,7 @@ export default function HomePage() {
             We specialise in
           </h2>
         </div>
-        <div style={{ overflow: "clip" }}>
+        <div style={{ overflowX: "clip", overflowY: "visible", paddingBottom: "clamp(80px, 12vw, 180px)" }}>
           {industries.map((ind, idx) => (
             <IndustryCarousel3D key={ind.slug} ind={ind} images={industryImages[ind.slug]} idx={idx} />
           ))}

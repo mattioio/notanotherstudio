@@ -1,10 +1,13 @@
 import ScrollAnimations from "@/components/ScrollAnimations";
-import PackagesSection from "@/components/PackagesSection";
+import PackagesSection, { type PackagesConfig } from "@/components/PackagesSection";
 import HomeContactSection from "@/components/HomeContactSection";
 import HeroCarousel from "@/components/HeroCarousel";
+import HeroPanel from "@/components/HeroPanel";
+import ServicesSection from "@/components/ServicesSection";
 import WorkSection, { type Project } from "@/components/WorkSection";
 import ScrollBadge from "@/components/ScrollBadge";
 import SectionNav from "@/components/SectionNav";
+import ProcessTimeline from "@/components/ProcessTimeline";
 
 interface Service {
   slug: string;
@@ -30,12 +33,14 @@ export interface IndustryPageProps {
   };
   marqueeItems: string[];
   services: Service[];
+  servicesHeading?: string;
   workProjects: Project[];
   steps: Step[];
   process: {
     heading: string;
     description: string;
   };
+  packages: PackagesConfig;
   contact: {
     headline: React.ReactNode;
     body: string;
@@ -46,7 +51,9 @@ export default function IndustryPageTemplate({
   hero,
   marqueeItems,
   services,
+  servicesHeading,
   workProjects,
+  packages,
   steps,
   process,
   contact,
@@ -56,42 +63,56 @@ export default function IndustryPageTemplate({
       <ScrollAnimations />
 
       {/* ── HERO ── */}
-      <section id="home" className="relative min-h-screen flex flex-col-reverse lg:flex-row">
-        <div className="relative z-10 flex items-center px-6 md:px-12 py-12 lg:py-0 lg:w-[38%] flex-shrink-0">
-          <div className="max-w-[480px]">
-            <div className="eyebrow fade-up visible mb-6">{hero.eyebrow}</div>
+      {(() => {
+        const cardContent = (
+          <>
+            <div className="eyebrow fade-up visible mb-3 md:mb-5 text-[11px] md:text-[13px]">{hero.eyebrow}</div>
             <h1
-              className="syne leading-[1.0] tracking-[-0.03em] mb-7 fade-up visible fade-up-delay-1"
-              style={{ fontSize: "clamp(44px, 6vw, 76px)" }}
+              className="syne leading-[1.0] tracking-[-0.03em] mb-3 md:mb-6 fade-up visible fade-up-delay-1"
+              style={{ fontSize: "clamp(26px, 5vw, 64px)" }}
             >
               {hero.headline}
             </h1>
-            <p className="text-[17px] text-[#6b6b6b] font-light leading-[1.6] max-w-[400px] mb-11 fade-up visible fade-up-delay-2">
+            <p className="text-[14px] md:text-[16px] text-[#4a4a4a] font-light leading-[1.6] max-w-[400px] mb-5 md:mb-9 fade-up visible fade-up-delay-2">
               {hero.description}
             </p>
-            <div className="flex flex-wrap items-center gap-7 fade-up visible fade-up-delay-3">
+            <div className="flex flex-wrap items-center gap-3 md:gap-6 fade-up visible fade-up-delay-3">
               <a
                 href="#packages"
-                className="inline-block px-8 py-4 rounded-full bg-[#0d0d0d] text-[#f5f3ef] font-bold text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] hover:-translate-y-0.5 transition-all"
+                className="inline-block px-5 md:px-7 py-2.5 md:py-3.5 rounded-full bg-[#0d0d0d] text-[#f5f3ef] font-bold text-xs md:text-sm tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] hover:-translate-y-0.5 transition-all"
               >
                 View Packages
               </a>
               <a
                 href="#work"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0d0d0d] no-underline border-b border-[#0d0d0d] pb-0.5 hover:text-[#6b6b6b] hover:border-[#6b6b6b] transition-colors"
+                className="inline-flex items-center gap-2 text-xs md:text-sm font-semibold text-[#0d0d0d] no-underline border-b border-[#0d0d0d] pb-0.5 hover:text-[#6b6b6b] hover:border-[#6b6b6b] transition-colors"
               >
                 See our work →
               </a>
             </div>
-          </div>
-        </div>
-        <div
-          className="relative flex-1 overflow-hidden"
-          style={{ height: "clamp(40vh, 100vh, 100vh)", minHeight: "40vh" }}
-        >
-          <HeroCarousel images={hero.images} />
-        </div>
-      </section>
+          </>
+        );
+        return (
+          <>
+            <section id="home" className="relative min-h-[55vh] md:min-h-screen overflow-hidden">
+              {/* Full-bleed image carousel behind everything */}
+              <div className="absolute inset-0">
+                <HeroCarousel images={hero.images} />
+              </div>
+
+              {/* Desktop: card inside hero, bottom-left */}
+              <div className="hidden md:flex relative z-10 min-h-screen items-end p-8">
+                <HeroPanel>{cardContent}</HeroPanel>
+              </div>
+            </section>
+
+            {/* Mobile: card sits below hero, overlapping image by 24px */}
+            <div className="md:hidden relative z-10 -mt-6">
+              <HeroPanel>{cardContent}</HeroPanel>
+            </div>
+          </>
+        );
+      })()}
 
       {/* ── MARQUEE ── */}
       <div className="relative bg-[#0d0d0d] text-white py-4 overflow-hidden whitespace-nowrap">
@@ -121,62 +142,15 @@ export default function IndustryPageTemplate({
         <SectionNav />
 
         {/* ── SERVICES ── */}
-        <section id="services" className="px-6 md:px-12 py-24 mx-auto max-w-7xl">
-          <div className="section-label mb-14 fade-up">What we do</div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-[2px]">
-            {services.map(({ slug, icon, name, desc, from, features }, i) => (
-              <a
-                key={slug}
-                href="#packages"
-                className={`group relative overflow-hidden block bg-[#f0ede6] hover:bg-[#0d0d0d] p-12 no-underline text-[#0d0d0d] hover:text-white transition-colors duration-300 cursor-pointer fade-up ${i === 1 ? "fade-up-delay-1" : i === 2 ? "fade-up-delay-2" : ""}`}
-              >
-                <div
-                  className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-[0.2] transition-opacity duration-300"
-                  style={{
-                    backgroundImage: "url('/images/Texturelabs_Grunge_316M.jpg')",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                />
-                <div className="w-11 h-11 bg-[#0d0d0d] group-hover:bg-[#f0c93a] text-white group-hover:text-[#0d0d0d] flex items-center justify-center mb-7 transition-colors duration-300">
-                  {icon}
-                </div>
-                <div className="syne text-[22px] tracking-[-0.02em] mb-4">{name}</div>
-                <p className="text-sm text-[#6b6b6b] group-hover:text-white/60 leading-[1.7] mb-7 font-light transition-colors duration-300">
-                  {desc}
-                </p>
-                <div className="mb-7 pb-6 border-b border-black/12 group-hover:border-white/12 transition-colors duration-300">
-                  <div className="text-[11px] font-semibold tracking-[0.1em] uppercase text-[#6b6b6b] group-hover:text-white/50 transition-colors duration-300">
-                    Starting from
-                  </div>
-                  <div className="syne text-[32px] tracking-[-0.03em]">{from}</div>
-                </div>
-                <ul className="list-none p-0 m-0 mb-8">
-                  {features.map((f) => (
-                    <li
-                      key={f}
-                      className="flex items-center gap-2.5 text-[13px] py-2 border-b border-black/12 group-hover:border-white/8 transition-colors duration-300 font-normal"
-                    >
-                      <span className="opacity-50 text-xs">→</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <span className="inline-flex items-center gap-2 text-[13px] font-bold tracking-[0.05em] uppercase border-b border-current pb-[3px]">
-                  View packages →
-                </span>
-              </a>
-            ))}
-          </div>
-        </section>
+        <ServicesSection services={services} heading={servicesHeading} />
 
         <WorkSection projects={workProjects} />
-        <PackagesSection />
+        <PackagesSection config={packages} />
 
         {/* ── PROCESS ── */}
         <section id="process" className="px-6 md:px-12 py-24 mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-20 items-end">
           <div>
-            <div className="section-label mb-14 fade-up">How we work</div>
+            <div className="section-label mb-14 fade-up">Our process</div>
             <h2
               className="syne leading-[1.05] tracking-[-0.03em] mb-5 fade-up"
               style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
@@ -186,26 +160,7 @@ export default function IndustryPageTemplate({
             <p className="text-base text-[#6b6b6b] leading-[1.7] mb-10 font-light fade-up">
               {process.description}
             </p>
-            <div className="flex flex-col">
-              {steps.map(({ num, title, body }, i) => (
-                <div
-                  key={num}
-                  className={`grid gap-5 py-7 border-b border-black/12 first:border-t first:border-black/12 fade-up ${i > 0 ? `fade-up-delay-${i}` : ""}`}
-                  style={{ gridTemplateColumns: "auto 1fr" }}
-                >
-                  <span
-                    className="font-bold text-[#6b6b6b] pr-6 leading-none"
-                    style={{ fontSize: "clamp(32px, 3vw, 48px)" }}
-                  >
-                    {num}
-                  </span>
-                  <div>
-                    <div className="font-bold text-base mb-1.5">{title}</div>
-                    <p className="text-sm text-[#6b6b6b] leading-[1.6] font-light">{body}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ProcessTimeline steps={steps} />
           </div>
           <div className="hidden lg:flex relative h-[500px] items-center justify-center overflow-hidden bg-[#f0ede6] fade-up">
             <div

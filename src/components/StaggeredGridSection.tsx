@@ -134,11 +134,10 @@ export default function StaggeredGridSection() {
                 className="absolute will-change-transform"
                 style={{
                   backgroundImage: `url(${src})`,
-                  backgroundSize: "cover",
+                  backgroundSize: "contain",
                   backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
                   inset: 0,
-                  top: "-20%",
-                  height: "140%",
                   backfaceVisibility: "hidden",
                 }}
               />
