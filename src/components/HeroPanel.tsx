@@ -12,33 +12,15 @@ export default function HeroPanel({ children }: { children: ReactNode }) {
     // Mobile: card is static, no animation needed
     if (window.innerWidth < 768) return;
 
-    // Desktop: slide-in from left on load, slide-out left on scroll
-    let raf: number;
-
+    // Desktop: slide-in from left on load, then hand off to parent for scroll-out
     const onEnd = () => {
       el.classList.remove("hero-panel-enter");
       el.style.transform = "translateX(0)";
       el.style.opacity = "1";
-      startScroll();
     };
     el.addEventListener("animationend", onEnd, { once: true });
 
-    const startScroll = () => {
-      const tick = () => {
-        const scrollY = window.scrollY;
-        const vh = window.innerHeight;
-        const t = Math.max(0, Math.min(1, (scrollY - vh * 0.1) / (vh * 0.4)));
-
-        el.style.transform = `translateX(${-t * 110}%)`;
-        el.style.opacity = `${1 - t}`;
-
-        raf = requestAnimationFrame(tick);
-      };
-      raf = requestAnimationFrame(tick);
-    };
-
     return () => {
-      cancelAnimationFrame(raf);
       el.removeEventListener("animationend", onEnd);
     };
   }, []);

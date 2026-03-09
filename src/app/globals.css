@@ -13,6 +13,11 @@
   box-sizing: border-box;
 }
 
+::selection {
+  background: var(--nas-yellow);
+  color: var(--nas-black);
+}
+
 html {
   overflow-x: hidden;
 }
@@ -98,6 +103,23 @@ body {
 .fade-up-delay-1 { transition-delay: 0.1s; }
 .fade-up-delay-2 { transition-delay: 0.2s; }
 .fade-up-delay-3 { transition-delay: 0.3s; }
+
+/* Scroll-locked slide-up for contact card */
+@keyframes scroll-slide-up {
+  from { opacity: 0; transform: translateY(60px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.scroll-reveal {
+  animation: scroll-slide-up linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 40%;
+}
+/* Fallback for browsers without scroll-timeline support */
+@supports not (animation-timeline: view()) {
+  .scroll-reveal {
+    animation: none;
+  }
+}
 
 /* Marquee */
 @keyframes marquee {

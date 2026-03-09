@@ -16,13 +16,13 @@ const NAV_H = 48;
 
 export default function SectionNav() {
   const [activeSection, setActiveSection] = useState<string>("");
-  const [slideUp, setSlideUp] = useState(0);
-  const [hidden, setHidden] = useState(false);
 
   // Refs for measuring pill positions
   const navRef = useRef<HTMLElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const linkRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
   const pillRef = useRef<HTMLDivElement>(null);
+  const readyRef = useRef(false);
 
   const setLinkRef = useCallback((key: string, el: HTMLAnchorElement | null) => {
     if (el) linkRefs.current.set(key, el);
@@ -51,6 +51,9 @@ export default function SectionNav() {
   }, [activeSection]);
 
   useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
     const sectionEls = sectionLinks
       .map(({ key }) => document.getElementById(key))
       .filter(Boolean) as HTMLElement[];
@@ -68,15 +71,28 @@ export default function SectionNav() {
       const processEl = document.getElementById("process");
       if (processEl) {
         const bottom = processEl.getBoundingClientRect().bottom;
-        setSlideUp(Math.max(0, Math.min(NAV_H, NAV_H - bottom)));
+        const slide = Math.max(0, Math.min(NAV_H, NAV_H - bottom));
+        wrapper.style.transform = `translateY(-${slide}px)`;
       }
 
       // Hide when the packages tab bar physically reaches this nav
       // (i.e. it's stuck at the top), but reappear for the Process section
+      let hidden = false;
       const pkgTabBar = document.querySelector("[data-packages-tabbar]");
       if (pkgTabBar) {
         const rect = pkgTabBar.getBoundingClientRect();
-        setHidden(rect.top <= 60 && rect.bottom > 0 && current !== "process");
+        hidden = rect.top <= 60 && rect.bottom > 0 && current !== "process";
+      }
+
+      wrapper.style.opacity = hidden ? "0" : "1";
+      wrapper.style.pointerEvents = hidden ? "none" : "auto";
+
+      // Enable transitions only after the first check so there's no flash
+      if (!readyRef.current) {
+        readyRef.current = true;
+        requestAnimationFrame(() => {
+          wrapper.style.transition = "opacity 0.3s ease";
+        });
       }
     };
 
@@ -91,12 +107,12 @@ export default function SectionNav() {
       <div className="pt-8" aria-hidden="true" />
 
       <div
+        ref={wrapperRef}
         className="sticky top-5 z-30 flex justify-center pb-4"
         style={{
-          transform: `translateY(-${slideUp}px)`,
-          opacity: hidden ? 0 : 1,
-          pointerEvents: hidden ? "none" : "auto",
-          transition: "opacity 0.3s ease",
+          opacity: 0,
+          pointerEvents: "none",
+          /* no transition initially — added by JS after first check */
         }}
       >
         <nav

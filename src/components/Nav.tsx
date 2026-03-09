@@ -71,14 +71,19 @@ export default function Nav() {
     setMobileOpen(false);
   }, [pathname]);
 
+  // Close mobile menu when returning via bfcache (mobile back button)
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setMobileOpen(false);
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
   // Hide nav after scrolling past hero on /for/ pages, or when footer/contact is reached
   useEffect(() => {
-    // Reset visibility on route change so nav is always visible at top of new page
-    if (headerRef.current) {
-      headerRef.current.style.transform = "translateY(0)";
-    }
-
     const NAV_TOP = 20; // matches top-5
+    let initialCheck = true;
 
     const onScroll = () => {
       let hide = false;
@@ -108,25 +113,29 @@ export default function Nav() {
       // Direct DOM write for scroll-sync (bypasses React re-render lag)
       const el = headerRef.current;
       if (el) {
+        // On initial check, skip transitions so nav doesn't flash in then out
+        const skipTransition = initialCheck;
+        initialCheck = false;
+
         if (hide) {
+          el.style.transition = skipTransition ? "none" : "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease";
           el.style.transform = "translateY(-120%)";
           el.style.opacity = "0";
-          el.style.transition = "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease";
         } else if (slide > 0) {
+          el.style.transition = skipTransition ? "none" : "opacity 0.3s ease";
           el.style.transform = `translateY(-${slide}px)`;
           el.style.opacity = "1";
-          el.style.transition = "opacity 0.3s ease"; // no transform transition during scroll-sync
         } else {
+          el.style.transition = skipTransition ? "none" : "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease";
           el.style.transform = "translateY(0)";
           el.style.opacity = "1";
-          el.style.transition = "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease";
         }
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    // Delay initial check to let the new page DOM settle
-    const t = setTimeout(onScroll, 100);
-    return () => { window.removeEventListener("scroll", onScroll); clearTimeout(t); };
+    // Run immediately — no delay so nav never flashes at wrong position
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
   }, [pathname]);
 
   return (
