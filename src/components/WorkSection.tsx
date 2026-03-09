@@ -66,6 +66,7 @@ export default function WorkSection({ projects }: WorkSectionProps) {
     clearInterval(timerRef.current);
     if (imgs.length <= 1) return;
     timerRef.current = setInterval(() => {
+      if (document.hidden) return;
       setAnimate(true);
       setPos((p) => p + 1);
     }, 3500);
@@ -80,10 +81,10 @@ export default function WorkSection({ projects }: WorkSectionProps) {
   useEffect(() => {
     if (!isInfinite) return;
     const onEnd = () => {
-      if (pos === 0) {
+      if (pos <= 0) {
         setAnimate(false);
         setPos(imgs.length);
-      } else if (pos === extended.length - 1) {
+      } else if (pos >= extended.length - 1) {
         setAnimate(false);
         setPos(1);
       }
@@ -195,9 +196,12 @@ export default function WorkSection({ projects }: WorkSectionProps) {
         </h2>
         <a
           href="#contact"
-          className="inline-block px-8 py-4 bg-[#f0c93a] text-[#0d0d0d] font-bold text-sm tracking-[0.05em] uppercase no-underline hover:bg-white transition-colors fade-up flex-shrink-0"
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#f0c93a] text-[#0d0d0d] font-bold text-sm tracking-[0.05em] uppercase no-underline hover:bg-white transition-colors fade-up flex-shrink-0"
         >
-          Start a project →
+          Start a project
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 2l5 5-5 5" />
+          </svg>
         </a>
       </div>
 
@@ -275,13 +279,16 @@ export default function WorkSection({ projects }: WorkSectionProps) {
                   ) : (
                     <a
                       href="#contact"
-                      className="flex-shrink-0 text-[11px] font-bold tracking-[0.1em] uppercase no-underline px-4 py-2.5 border transition-all duration-200 whitespace-nowrap"
+                      className="flex-shrink-0 inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.1em] uppercase no-underline px-4 py-2.5 border rounded-full transition-all duration-200 whitespace-nowrap"
                       style={{
                         borderColor: active === i ? "#f0c93a" : "rgba(240,201,58,0.35)",
                         color: active === i ? "#f0c93a" : "rgba(240,201,58,0.6)",
                       }}
                     >
-                      Get in touch →
+                      Get in touch
+                      <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 2l5 5-5 5" />
+                      </svg>
                     </a>
                   )}
                 </div>

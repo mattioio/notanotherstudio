@@ -20,6 +20,8 @@ export function useInfiniteCarousel<T>(slides: T[], autoAdvanceMs = 4000) {
     clearInterval(timerRef.current);
     if (autoAdvanceMs > 0) {
       timerRef.current = setInterval(() => {
+        // Don't advance when tab is hidden — transitionend won't fire
+        if (document.hidden) return;
         setAnimate(true);
         setPos((p) => p + 1);
       }, autoAdvanceMs);
@@ -32,14 +34,16 @@ export function useInfiniteCarousel<T>(slides: T[], autoAdvanceMs = 4000) {
   }, [resetTimer]);
 
   // After transition to a clone, snap instantly to the real slide
+  // Use range checks (<=, >=) instead of exact equality so that if pos
+  // drifts past the clone (e.g. transitionend didn't fire), it still snaps back
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
     const onEnd = () => {
-      if (pos === 0) {
+      if (pos <= 0) {
         setAnimate(false);
         setPos(slides.length);
-      } else if (pos === extended.length - 1) {
+      } else if (pos >= extended.length - 1) {
         setAnimate(false);
         setPos(1);
       }
