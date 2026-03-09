@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, type CSSProperties } from "re
 import ScrambleText from "@/components/ScrambleText";
 import StaggeredGridSection from "@/components/StaggeredGridSection";
 import { useSwipe } from "@/hooks/useSwipe";
+import { useInfiniteCarousel } from "@/hooks/useInfiniteCarousel";
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -138,6 +139,23 @@ function IndustryCarousel3D({ ind, images, idx }: { ind: typeof industries[0]; i
   const EXPAND_START = 0.55;
   const EXPAND_DUR = 0.5;
   const NAV_AT = 1100; // ms
+
+  // Reset exit animation when returning via bfcache (mobile back button)
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) {
+        exitRef.current = false;
+        exitStartRef.current = 0;
+        const fs = fsRef.current;
+        if (fs) {
+          fs.style.opacity = "0";
+          fs.style.transform = "scale(0.1)";
+        }
+      }
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
 
   useEffect(() => {
     const scene = sceneRef.current;
@@ -274,25 +292,9 @@ function IndustryCarousel3D({ ind, images, idx }: { ind: typeof industries[0]; i
 function ScrollCarousel() {
   const imgRef = useRef<HTMLDivElement>(null);
   const mobileImgRef = useRef<HTMLDivElement>(null);
-  const [activeImg, setActiveImg] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
-  const resetTimer = useCallback(() => {
-    clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setActiveImg((prev) => (prev + 1) % HERO_IMGS.length);
-    }, 4000);
-  }, []);
-
-  // Auto-advance slides — 4s per image (matching /for/ hero)
-  useEffect(() => {
-    resetTimer();
-    return () => clearInterval(timerRef.current);
-  }, [resetTimer]);
-
-  const goTo = useCallback((i: number) => { setActiveImg(i); resetTimer(); }, [resetTimer]);
-  const next = useCallback(() => { setActiveImg((p) => (p + 1) % HERO_IMGS.length); resetTimer(); }, [resetTimer]);
-  const prev = useCallback(() => { setActiveImg((p) => (p - 1 + HERO_IMGS.length) % HERO_IMGS.length); resetTimer(); }, [resetTimer]);
+  const { extended, pos, realIndex, animate, trackRef, goTo, next, prev } =
+    useInfiniteCarousel(HERO_IMGS);
   const swipe = useSwipe(next, prev);
 
   useEffect(() => {
@@ -342,6 +344,9 @@ function ScrollCarousel() {
     return () => obs.disconnect();
   }, []);
 
+  const dragPct = (swipe.dragOffset / (typeof window !== "undefined" ? window.innerWidth : 1)) * 100;
+  const translatePct = ((-pos * 100) + dragPct) / extended.length;
+
   /* Shared pagination dots */
   const dots = (
     <div
@@ -354,10 +359,10 @@ function ScrollCarousel() {
           onClick={() => goTo(i)}
           aria-label={`Slide ${i + 1}`}
           style={{
-            width: i === activeImg ? "28px" : "6px",
+            width: i === realIndex ? "28px" : "6px",
             height: "6px",
             borderRadius: "3px",
-            background: i === activeImg ? "#f0c93a" : "rgba(255,255,255,0.5)",
+            background: i === realIndex ? "#f0c93a" : "rgba(255,255,255,0.5)",
             border: "none",
             cursor: "pointer",
             padding: 0,
@@ -387,23 +392,32 @@ function ScrollCarousel() {
             boxShadow: "0 8px 40px rgba(0,0,0,0.12)",
             opacity: 0,
             transform: "translateY(40px)",
+            cursor: swipe.dragOffset ? "grabbing" : "grab",
           }}
-          {...swipe}
+          {...swipe.handlers}
         >
-          {HERO_IMGS.map((src, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={src}
-              src={src}
-              alt="Our work"
-              className="absolute inset-0 w-full h-full object-cover"
-              loading={i === 0 ? "eager" : "lazy"}
-              style={{
-                opacity: activeImg === i ? 1 : 0,
-                transition: "opacity 0.8s ease",
-              }}
-            />
-          ))}
+          <div
+            ref={trackRef}
+            className="flex h-full"
+            style={{
+              width: `${extended.length * 100}%`,
+              transform: `translateX(${translatePct}%)`,
+              transition: !animate || swipe.dragOffset ? "none" : "transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            {extended.map((src, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={`${src}-${i}`}
+                src={src}
+                alt="Our work"
+                className="h-full object-cover"
+                loading={i <= 1 ? "eager" : "lazy"}
+                draggable={false}
+                style={{ width: `${100 / extended.length}%`, flexShrink: 0 }}
+              />
+            ))}
+          </div>
           {dots}
         </div>
       </div>
@@ -415,21 +429,32 @@ function ScrollCarousel() {
         transform: "translateY(40px)",
         transition: "opacity 0.8s ease, transform 0.8s ease",
       }}>
-        <div className="mx-4 overflow-hidden relative" style={{ borderRadius: 16, aspectRatio: "16/9" }} {...swipe}>
-          {HERO_IMGS.map((src, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={src}
-              src={src}
-              alt="Our work"
-              className="absolute inset-0 w-full h-full object-cover"
-              loading={i === 0 ? "eager" : "lazy"}
-              style={{
-                opacity: activeImg === i ? 1 : 0,
-                transition: "opacity 0.8s ease",
-              }}
-            />
-          ))}
+        <div
+          className="mx-4 overflow-hidden relative"
+          style={{ borderRadius: 16, aspectRatio: "16/9", cursor: swipe.dragOffset ? "grabbing" : "grab" }}
+          {...swipe.handlers}
+        >
+          <div
+            className="flex h-full"
+            style={{
+              width: `${extended.length * 100}%`,
+              transform: `translateX(${translatePct}%)`,
+              transition: !animate || swipe.dragOffset ? "none" : "transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            {extended.map((src, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={`${src}-${i}`}
+                src={src}
+                alt="Our work"
+                className="h-full object-cover"
+                loading={i <= 1 ? "eager" : "lazy"}
+                draggable={false}
+                style={{ width: `${100 / extended.length}%`, flexShrink: 0 }}
+              />
+            ))}
+          </div>
           {dots}
         </div>
       </div>

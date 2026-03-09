@@ -226,7 +226,7 @@ export default function PackagesSection({ config }: { config: PackagesConfig }) 
               ))}
             </ul>
             <a
-              href="/#contact"
+              href="#contact"
               className="inline-block px-8 py-4 rounded-full bg-[#0d0d0d] text-[#f5f3ef] font-bold text-[14px] tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] transition-colors"
             >
               Get started
@@ -308,7 +308,7 @@ export default function PackagesSection({ config }: { config: PackagesConfig }) 
 
                     {/* CTA */}
                     <a
-                      href="/#contact"
+                      href="#contact"
                       className="mt-5 inline-block px-6 py-3 rounded-full bg-[#0d0d0d] text-[#f5f3ef] font-bold text-[13px] tracking-[0.02em] no-underline hover:bg-[#f0c93a] hover:text-[#0d0d0d] transition-colors"
                     >
                       Get started

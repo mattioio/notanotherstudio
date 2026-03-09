@@ -174,7 +174,7 @@ function HomeFooter() {
           </p>
         </div>
 
-        <ContactForm />
+        <ContactForm className="scroll-reveal" />
       </div>
 
       {/* Bottom bar */}

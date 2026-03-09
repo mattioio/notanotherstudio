@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { useSwipe } from "@/hooks/useSwipe";
+import { useInfiniteCarousel } from "@/hooks/useInfiniteCarousel";
 
 interface HeroCarouselProps {
   images?: string[];
@@ -15,44 +16,13 @@ const defaultImages = [
 ];
 
 export default function HeroCarousel({ images = defaultImages }: HeroCarouselProps) {
-  const [current, setCurrent] = useState(0);
+  const { extended, pos, realIndex, animate, trackRef, goTo, next, prev } =
+    useInfiniteCarousel(images);
+  const swipe = useSwipe(next, prev);
+
   const innerRef = useRef<HTMLDivElement>(null);
   const mouseNorm = useRef({ x: 0.5, y: 0.5 });
   const smooth = useRef({ x: 0.5, y: 0.5 });
-  const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
-
-  const resetTimer = useCallback(() => {
-    clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length);
-    }, 4000);
-  }, [images.length]);
-
-  // Auto-advance slides
-  useEffect(() => {
-    resetTimer();
-    return () => clearInterval(timerRef.current);
-  }, [resetTimer]);
-
-  const goTo = useCallback(
-    (i: number) => {
-      setCurrent(i);
-      resetTimer();
-    },
-    [resetTimer],
-  );
-
-  const next = useCallback(() => {
-    setCurrent((prev) => { const n = (prev + 1) % images.length; return n; });
-    resetTimer();
-  }, [images.length, resetTimer]);
-
-  const prev = useCallback(() => {
-    setCurrent((prev) => { const n = (prev - 1 + images.length) % images.length; return n; });
-    resetTimer();
-  }, [images.length, resetTimer]);
-
-  const swipe = useSwipe(next, prev);
 
   // Window parallax effect
   useEffect(() => {
@@ -82,29 +52,41 @@ export default function HeroCarousel({ images = defaultImages }: HeroCarouselPro
     };
   }, []);
 
+  const dragPct = (swipe.dragOffset / (typeof window !== "undefined" ? window.innerWidth : 1)) * 100;
+  const translatePct = ((-pos * 100) + dragPct) / extended.length;
+
   return (
-    <div className="absolute inset-0 overflow-hidden" {...swipe}>
-      {/* Oversized inner container for Window panning */}
+    <div
+      className="absolute inset-0 overflow-hidden select-none"
+      style={{ cursor: swipe.dragOffset ? "grabbing" : "grab" }}
+      {...swipe.handlers}
+    >
       <div
         ref={innerRef}
         className="absolute"
-        style={{
-          inset: "-3%",
-          width: "106%",
-          height: "106%",
-          willChange: "transform",
-        }}
+        style={{ inset: "-3%", width: "106%", height: "106%", willChange: "transform" }}
       >
-        {images.map((src, i) => (
-          <div
-            key={src}
-            className="absolute inset-0"
-            style={{ opacity: i === current ? 1 : 0, transition: "opacity 0.8s ease" }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt="Not Another Studio — project work" className="w-full h-full object-cover" />
-          </div>
-        ))}
+        <div
+          ref={trackRef}
+          className="flex h-full"
+          style={{
+            width: `${extended.length * 100}%`,
+            transform: `translateX(${translatePct}%)`,
+            transition: !animate || swipe.dragOffset ? "none" : "transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+            willChange: "transform",
+          }}
+        >
+          {extended.map((src, i) => (
+            <div
+              key={`${src}-${i}`}
+              className="relative h-full"
+              style={{ width: `${100 / extended.length}%`, flexShrink: 0 }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt="Not Another Studio — project work" className="w-full h-full object-cover" draggable={false} />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Slide indicators */}
@@ -118,10 +100,10 @@ export default function HeroCarousel({ images = defaultImages }: HeroCarouselPro
             onClick={() => goTo(i)}
             aria-label={`Slide ${i + 1}`}
             style={{
-              width: i === current ? "28px" : "6px",
+              width: i === realIndex ? "28px" : "6px",
               height: "6px",
               borderRadius: "3px",
-              background: i === current ? "#f0c93a" : "rgba(255,255,255,0.5)",
+              background: i === realIndex ? "#f0c93a" : "rgba(255,255,255,0.5)",
               border: "none",
               cursor: "pointer",
               padding: 0,

@@ -44,7 +44,7 @@ export default function HomeContactSection({
         </div>
 
         <ContactForm
-          className="fade-up fade-up-delay-1"
+          className="scroll-reveal"
           textareaPlaceholder="Briefly describe your agency, your goals, and any timing requirements..."
         />
       </div>

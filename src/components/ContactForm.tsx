@@ -15,7 +15,7 @@ export default function ContactForm({
 
   if (submitted) {
     return (
-      <div className="flex flex-col items-center justify-center text-center py-16">
+      <div className={`flex flex-col items-center justify-center text-center py-16 relative bg-[#1a1a24]/70 backdrop-blur-2xl rounded-2xl p-6 sm:p-8 border border-white/[0.1] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_8px_32px_rgba(0,0,0,0.4)] ${className}`}>
         <div className="text-[#f0c93a] syne text-5xl mb-4">✓</div>
         <h3 className="syne text-2xl mb-3">Sent. We&apos;ll be in touch.</h3>
         <p className="text-white/50 text-sm font-light max-w-sm">
@@ -26,7 +26,7 @@ export default function ContactForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className={`flex flex-col gap-4 ${className}`}>
+    <form onSubmit={handleSubmit} className={`flex flex-col gap-4 relative bg-[#1a1a24]/70 backdrop-blur-2xl rounded-2xl p-6 sm:p-8 border border-white/[0.1] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_8px_32px_rgba(0,0,0,0.4)] ${className}`}>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
           <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-white/40">
