@@ -3,7 +3,16 @@ import type { PackagesConfig } from "@/components/PackagesSection";
 import IndustryPageTemplate from "@/components/IndustryPageTemplate";
 
 export const metadata: Metadata = {
-  title: "Not Another Studio | Web, Print & Brand for Commercial Letting Agencies",
+  title: "Commercial Letting Agencies",
+  description:
+    "Websites, letting brochures and brand identities built exclusively for commercial letting agencies. Property CMS, lead capture and print — from £300.",
+  alternates: { canonical: "/for/commercial-properties" },
+  openGraph: {
+    title: "Commercial Letting Agencies — Not Another Studio",
+    description:
+      "Websites, letting brochures and brand identities built exclusively for commercial letting agencies.",
+    url: "/for/commercial-properties",
+  },
 };
 
 const marqueeItems = [

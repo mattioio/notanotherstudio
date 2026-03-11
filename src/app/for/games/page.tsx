@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Not Another Studio | Games & Interactive",
+  title: "Games & Interactive",
+  description:
+    "Design services for the games and interactive industry. Coming soon — get in touch early to discuss your project.",
+  alternates: { canonical: "/for/games" },
+  openGraph: {
+    title: "Games & Interactive — Not Another Studio",
+    description:
+      "Design services for the games and interactive industry. Coming soon — get in touch early.",
+    url: "/for/games",
+  },
 };
 
 export default function GamesPage() {

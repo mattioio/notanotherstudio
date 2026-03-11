@@ -1,6 +1,17 @@
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Services" };
+export const metadata: Metadata = {
+  title: "Services",
+  description:
+    "Web, print and brand packages built for letting agencies. Custom websites from £1,000, print from £300, full rebrands from £1,000. Fixed prices, fast turnarounds.",
+  alternates: { canonical: "/services" },
+  openGraph: {
+    title: "Services — Not Another Studio",
+    description:
+      "Web, print and brand packages built for letting agencies. Custom websites from £1,000, print from £300, full rebrands from £1,000.",
+    url: "/services",
+  },
+};
 
 export default function ServicesPage() {
   return (
