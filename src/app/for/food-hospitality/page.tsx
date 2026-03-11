@@ -3,7 +3,16 @@ import type { PackagesConfig } from "@/components/PackagesSection";
 import IndustryPageTemplate from "@/components/IndustryPageTemplate";
 
 export const metadata: Metadata = {
-  title: "Not Another Studio | Food & Hospitality",
+  title: "Food & Hospitality",
+  description:
+    "Menu design, venue branding and restaurant websites for cafes, restaurants and hospitality venues. Booking integration, social assets and print marketing.",
+  alternates: { canonical: "/for/food-hospitality" },
+  openGraph: {
+    title: "Food & Hospitality — Not Another Studio",
+    description:
+      "Menu design, venue branding and restaurant websites for cafes, restaurants and hospitality venues.",
+    url: "/for/food-hospitality",
+  },
 };
 
 const marqueeItems = [

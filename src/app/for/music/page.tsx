@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Not Another Studio | Music & Events",
+  title: "Music & Events",
+  description:
+    "Design services for the music and events industry. Coming soon — get in touch early to discuss your project.",
+  alternates: { canonical: "/for/music" },
+  openGraph: {
+    title: "Music & Events — Not Another Studio",
+    description:
+      "Design services for the music and events industry. Coming soon — get in touch early.",
+    url: "/for/music",
+  },
 };
 
 export default function MusicPage() {

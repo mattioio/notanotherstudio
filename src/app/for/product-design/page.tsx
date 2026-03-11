@@ -3,7 +3,16 @@ import type { PackagesConfig } from "@/components/PackagesSection";
 import IndustryPageTemplate from "@/components/IndustryPageTemplate";
 
 export const metadata: Metadata = {
-  title: "Not Another Studio | Product Design",
+  title: "Product Design",
+  description:
+    "UX research, interface design and brand for product teams and startups. Fixed-price packages with fast turnarounds — no bloated agency markup.",
+  alternates: { canonical: "/for/product-design" },
+  openGraph: {
+    title: "Product Design — Not Another Studio",
+    description:
+      "UX research, interface design and brand for product teams and startups. Fixed-price packages with fast turnarounds.",
+    url: "/for/product-design",
+  },
 };
 
 const marqueeItems = [

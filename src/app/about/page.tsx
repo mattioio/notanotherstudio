@@ -1,6 +1,17 @@
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "About" };
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Founded by someone who spent years inside a commercial letting agency. We understand property marketing because we lived it. 40+ agencies served, 98% retention.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "About Not Another Studio",
+    description:
+      "Founded by someone who spent years inside a commercial letting agency. We understand property marketing because we lived it.",
+    url: "/about",
+  },
+};
 
 export default function AboutPage() {
   return (

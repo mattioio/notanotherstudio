@@ -3,7 +3,16 @@ import type { PackagesConfig } from "@/components/PackagesSection";
 import IndustryPageTemplate from "@/components/IndustryPageTemplate";
 
 export const metadata: Metadata = {
-  title: "Not Another Studio | Gaming",
+  title: "Gaming",
+  description:
+    "Studio branding, key art, Steam assets and launch marketing for game studios and developers. Press kits, social media and brand identity packages.",
+  alternates: { canonical: "/for/gaming" },
+  openGraph: {
+    title: "Gaming — Not Another Studio",
+    description:
+      "Studio branding, key art, Steam assets and launch marketing for game studios and developers.",
+    url: "/for/gaming",
+  },
 };
 
 const marqueeItems = [
