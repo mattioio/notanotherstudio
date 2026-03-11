@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import { useSwipe } from "@/hooks/useSwipe";
 
 export type Project = {
@@ -177,15 +178,9 @@ export default function WorkSection({ projects }: WorkSectionProps) {
   return (
     <section id="work" className="relative bg-[#0d0d0d] text-white">
       {/* Grunge texture */}
-      <div
-        className="absolute inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage: "url('/images/Texturelabs_Grunge_316M.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          opacity: 0.2,
-        }}
-      />
+      <div className="absolute inset-0 pointer-events-none z-0" style={{ opacity: 0.2 }}>
+        <Image src="/images/Texturelabs_Grunge_316M.jpg" alt="" fill sizes="100vw" className="object-cover" quality={30} />
+      </div>
       {/* ── Header ── */}
       <div className="relative z-10 px-6 md:px-12 pt-24 pb-12 flex items-end justify-between gap-6 flex-wrap border-b border-white/10">
         <h2
@@ -319,8 +314,7 @@ export default function WorkSection({ projects }: WorkSectionProps) {
                         className="relative h-full"
                         style={{ width: `${100 / projExtended.length}%`, flexShrink: 0 }}
                       >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={src} alt={client} className="w-full h-full object-cover" draggable={false} />
+                        <Image src={src} alt={client} fill sizes="100vw" className="object-cover" draggable={false} />
                       </div>
                     ))}
                   </div>
@@ -401,8 +395,7 @@ export default function WorkSection({ projects }: WorkSectionProps) {
                           className="relative h-full"
                           style={{ width: `${100 / projExtended.length}%`, flexShrink: 0 }}
                         >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={src} alt={client} className="w-full h-full object-cover" draggable={false} />
+                          <Image src={src} alt={client} fill sizes="52vw" className="object-cover" draggable={false} />
                         </div>
                       ))}
                     </div>

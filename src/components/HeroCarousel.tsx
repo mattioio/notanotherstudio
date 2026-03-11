@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { useSwipe } from "@/hooks/useSwipe";
 import { useInfiniteCarousel } from "@/hooks/useInfiniteCarousel";
 
@@ -82,8 +83,7 @@ export default function HeroCarousel({ images = defaultImages }: HeroCarouselPro
               className="relative h-full"
               style={{ width: `${100 / extended.length}%`, flexShrink: 0 }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="Not Another Studio — project work" className="w-full h-full object-cover" draggable={false} />
+              <Image src={src} alt="Not Another Studio — project work" fill sizes="100vw" className="object-cover" draggable={false} priority={i <= 1} />
             </div>
           ))}
         </div>

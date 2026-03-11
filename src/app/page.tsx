@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
+import Image from "next/image";
 import ScrambleText from "@/components/ScrambleText";
 import StaggeredGridSection from "@/components/StaggeredGridSection";
 import { useSwipe } from "@/hooks/useSwipe";
@@ -260,8 +261,7 @@ function IndustryCarousel3D({ ind, images, idx }: { ind: typeof industries[0]; i
               className="absolute inset-0"
               style={{ transform: `rotateY(${i * angleStep}deg) translateZ(${R}px)` }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt={ind.label} className="w-full h-full object-cover" loading="lazy" />
+              <Image src={src} alt={ind.label} fill sizes="40vw" className="object-cover" />
             </div>
           ))}
         </div>
@@ -280,8 +280,7 @@ function IndustryCarousel3D({ ind, images, idx }: { ind: typeof industries[0]; i
         className="absolute pointer-events-none"
         style={{ zIndex: 10, opacity: 0, transform: "scale(0.1)", willChange: "transform, opacity" }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={images[0]} alt={ind.label} className="w-full h-full object-cover" />
+        <Image src={images[0]} alt={ind.label} fill sizes="100vw" className="object-cover" />
       </div>
     </div>
   );
@@ -406,16 +405,13 @@ function ScrollCarousel() {
             }}
           >
             {extended.map((src, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <div
                 key={`${src}-${i}`}
-                src={src}
-                alt="Our work"
-                className="h-full object-cover"
-                loading={i <= 1 ? "eager" : "lazy"}
-                draggable={false}
+                className="relative h-full"
                 style={{ width: `${100 / extended.length}%`, flexShrink: 0 }}
-              />
+              >
+                <Image src={src} alt="Our work" fill sizes="100vw" className="object-cover" draggable={false} priority={i <= 1} />
+              </div>
             ))}
           </div>
           {dots}
@@ -443,16 +439,13 @@ function ScrollCarousel() {
             }}
           >
             {extended.map((src, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <div
                 key={`${src}-${i}`}
-                src={src}
-                alt="Our work"
-                className="h-full object-cover"
-                loading={i <= 1 ? "eager" : "lazy"}
-                draggable={false}
+                className="relative h-full"
                 style={{ width: `${100 / extended.length}%`, flexShrink: 0 }}
-              />
+              >
+                <Image src={src} alt="Our work" fill sizes="100vw" className="object-cover" draggable={false} priority={i <= 1} />
+              </div>
             ))}
           </div>
           {dots}

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import ScrollAnimations from "@/components/ScrollAnimations";
 import PackagesSection, { type PackagesConfig } from "@/components/PackagesSection";
 import HomeContactSection from "@/components/HomeContactSection";
@@ -91,15 +92,9 @@ export default function IndustryPageTemplate({
 
       {/* ── MARQUEE ── */}
       <div className="relative bg-[#0d0d0d] text-white py-4 overflow-hidden whitespace-nowrap">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: "url('/images/Texturelabs_Grunge_316M.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.2,
-          }}
-        />
+        <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.2 }}>
+          <Image src="/images/Texturelabs_Grunge_316M.jpg" alt="" fill sizes="100vw" className="object-cover" quality={30} />
+        </div>
         <div className="inline-flex marquee-animate">
           {marqueeItems.map((item, i) => (
             <span
