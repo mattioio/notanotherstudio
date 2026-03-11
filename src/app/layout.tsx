@@ -53,6 +53,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  other: {
+    "theme-color": "#0d0d0d",
+  },
 };
 
 export default function RootLayout({
