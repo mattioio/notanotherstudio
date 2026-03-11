@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -133,14 +134,12 @@ export default function StaggeredGridSection() {
                 }}
                 className="absolute will-change-transform"
                 style={{
-                  backgroundImage: `url(${src})`,
-                  backgroundSize: "contain",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
                   inset: 0,
                   backfaceVisibility: "hidden",
                 }}
-              />
+              >
+                <Image src={src} alt="" fill sizes="(min-width: 640px) 320px, 100vw" className="object-contain" />
+              </div>
             </div>
           </figure>
         ))}
