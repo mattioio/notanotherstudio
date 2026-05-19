@@ -16,7 +16,7 @@ export default function ZentoPrivacyPage() {
           Privacy Policy
         </h1>
         <p className="text-sm text-[#999] mb-16 uppercase tracking-widest font-medium">
-          Last updated: February 8, 2026
+          Last updated: May 19, 2026
         </p>
 
         <div className="space-y-12">
@@ -63,13 +63,34 @@ export default function ZentoPrivacyPage() {
 
           <section>
             <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-[#999] mb-4">
-              Processors
+              Purchases
             </h2>
             <div className="space-y-3 text-[#333] font-light leading-relaxed">
               <p>
-                We use PostHog to process anonymous analytics events after you
-                opt in.
+                In-app purchases are handled by Apple. We use RevenueCat to
+                verify your purchase and unlock the full game. Neither service
+                receives personal data from inside the app — only the purchase
+                token needed to confirm your entitlement.
               </p>
+              <p>
+                Your purchase is tied to your Apple ID, not to any Zento account
+                (we don&apos;t have accounts). Restore Purchases is available on
+                the paywall.
+              </p>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-[#999] mb-4">
+              Processors
+            </h2>
+            <div className="space-y-3 text-[#333] font-light leading-relaxed">
+              <p>PostHog — anonymous analytics events, only after you opt in.</p>
+              <p>
+                RevenueCat — in-app purchase verification and entitlement
+                management.
+              </p>
+              <p>Apple — payment processing for in-app purchases.</p>
             </div>
           </section>
         </div>
