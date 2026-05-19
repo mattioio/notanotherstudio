@@ -4,10 +4,6 @@ import {
   Plus_Jakarta_Sans,
 } from "next/font/google";
 import "./globals.css";
-import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
-
-
 const syne = Syne({
   variable: "--font-syne",
   subsets: ["latin"],
@@ -95,9 +91,7 @@ export default function RootLayout({
             }),
           }}
         />
-        <Nav />
-        <main>{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   );
